@@ -53,8 +53,8 @@ public class StorageService {
         return feeTypeRepository.save(feeTypeEntity);
     }
 
-    ProductFeeEntity createProductFee(ProductFeeEntity productFeeEntity) {
-        return productFeeRepository.save(productFeeEntity);
+    void createProductFee(ProductFeeEntity productFeeEntity) {
+        productFeeRepository.save(productFeeEntity);
     }
     List<FeeTypeEntity> fetchFeeTypes() {
         return feeTypeRepository.findAll();
