@@ -31,7 +31,9 @@ public class StorageService {
     ProductEntity createProduct(ProductEntity productEntity) {
         return productRepository.save(productEntity);
     }
-
+    List<ProductEntity> findProducts() {
+        return productRepository.findAll();
+    }
     ProductEntity findProductByID(Long id) {
         return productRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Product with ID "+id+" not found"));
     }

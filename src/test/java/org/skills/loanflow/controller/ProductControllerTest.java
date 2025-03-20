@@ -20,6 +20,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -66,7 +67,7 @@ class ProductControllerTest {
         when(productService.fetchTenureDurationTypes()).thenReturn(tenureDurationTypes);
 
         // Perform GET request and validate response
-        mockMvc.perform(get("/v1/products/duration-types"))
+        mockMvc.perform(get("/v1/product/duration-types"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(1))
                 .andExpect(jsonPath("$[0].name").value("DAYS"))
@@ -87,7 +88,7 @@ class ProductControllerTest {
         when(productService.fetchFeeTypes()).thenReturn(feeTypes);
 
         // Perform GET request and validate response
-        mockMvc.perform(get("/v1/products/fee-types"))
+        mockMvc.perform(get("/v1/product/fee-types"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(1))
                 .andExpect(jsonPath("$[0].name").value("SERVICE_FEE"))
@@ -113,7 +114,7 @@ class ProductControllerTest {
         when(productService.createProduct(any(ProductRequestDTO.class))).thenReturn(response);
 
         // Perform POST request and validate response
-        mockMvc.perform(post("/v1/products")
+        mockMvc.perform(post("/v1/product")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
@@ -137,12 +138,39 @@ class ProductControllerTest {
         when(productService.attachFeeToProduct(any(Long.class), any(FeeRequestDTO.class))).thenReturn(response);
 
         // Perform POST request and validate response
-        mockMvc.perform(post("/v1/products/1/attach-fee")
+        mockMvc.perform(post("/v1/product/1/attach-fee")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.productId").value(1))
                 .andExpect(jsonPath("$.name").value("Personal Loan"));
+    }
+
+    @Test
+    @DisplayName("Test Get Products")
+    void testGetProducts() throws Exception {
+        // Mock data
+        ProductResponseDTO response = new ProductResponseDTO();
+        response.setProductId(1L);
+        response.setName("Personal Loan");
+        response.setDaysAfterDueForFeeApplication(5);
+
+        ProductResponseDTO response1 = new ProductResponseDTO();
+        response1.setProductId(1L);
+        response1.setName("Another Loan");
+        response.setDaysAfterDueForFeeApplication(15);
+
+        List<ProductResponseDTO> products = Arrays.asList(response,response1);
+
+        // Mock service method
+        when(productService.getProducts()).thenReturn(products);
+
+        // Perform GET request and validate response
+        mockMvc.perform(get("/v1/product"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[0].productId").value(1))
+                .andExpect(jsonPath("$[0].name").value("Personal Loan"));
     }
 
     @Test
@@ -157,7 +185,7 @@ class ProductControllerTest {
         when(productService.getProductById(1L)).thenReturn(response);
 
         // Perform GET request and validate response
-        mockMvc.perform(get("/v1/products/1"))
+        mockMvc.perform(get("/v1/product/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.productId").value(1))
                 .andExpect(jsonPath("$.name").value("Personal Loan"));

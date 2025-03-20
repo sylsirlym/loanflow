@@ -81,6 +81,18 @@ public class ProductService {
         return modelMapper.map(savedProduct, ProductResponseDTO.class);
     }
 
+    public ProductResponseDTO getProductById(Long id) {
+        var product = storageService.findProductByID(id);
+        return modelMapper.map(product, ProductResponseDTO.class);
+    }
+
+    public List<ProductResponseDTO> getProducts() {
+        return storageService.findProducts()
+                .stream().map(
+                        productEntity -> modelMapper.map(productEntity, ProductResponseDTO.class)
+                ).toList();
+    }
+
     @Transactional
     public ProductResponseDTO attachFeeToProduct(Long productID,FeeRequestDTO attachFeeRequestDTO) {
         // Fetch the product and fee type
@@ -98,11 +110,6 @@ public class ProductService {
 
         // Save the mapping
         storageService.createProductFee(productFee);
-        return modelMapper.map(product, ProductResponseDTO.class);
-    }
-
-    public ProductResponseDTO getProductById(Long id) {
-        var product = storageService.findProductByID(id);
         return modelMapper.map(product, ProductResponseDTO.class);
     }
 }

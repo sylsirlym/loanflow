@@ -17,37 +17,43 @@ import org.springframework.web.bind.annotation.*;
  */
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/v1")
+@RequestMapping("/v1/product")
 public class ProductController {
     private final ProductService productService;
 
-    @GetMapping("/products/duration-types")
+    @GetMapping("/duration-types")
     public ResponseEntity<Object> fetchTenureDurationTypes() {
         var tenureDurationTypes = productService.fetchTenureDurationTypes();
         return ResponseEntity.status(HttpStatus.OK).body(tenureDurationTypes);
     }
 
-    @GetMapping("/products/fee-types")
+    @GetMapping("/fee-types")
     public ResponseEntity<Object> fetchFeeTypes() {
         var feeTypes = productService.fetchFeeTypes();
         return ResponseEntity.status(HttpStatus.OK).body(feeTypes);
     }
 
-    @PostMapping("/products")
+    @PostMapping
     public ResponseEntity<Object> createProduct(@Valid @RequestBody ProductRequestDTO productRequestDTO) {
         var product = productService.createProduct(productRequestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(product);
     }
 
-    @PostMapping("/products/{id}/attach-fee")
-    public ResponseEntity<Object> attachFeeToProduct(@RequestBody FeeRequestDTO request, @PathVariable Long id) {
-        var product = productService.attachFeeToProduct(id, request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(product);
+    @GetMapping
+    public ResponseEntity<Object> getProducts() {
+        var product = productService.getProducts();
+        return ResponseEntity.ok(product);
     }
 
-    @GetMapping("/products/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<Object> getProduct(@PathVariable Long id) {
         var product = productService.getProductById(id);
         return ResponseEntity.ok(product);
+    }
+
+    @PostMapping("/{id}/attach-fee")
+    public ResponseEntity<Object> attachFeeToProduct(@RequestBody FeeRequestDTO request, @PathVariable Long id) {
+        var product = productService.attachFeeToProduct(id, request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(product);
     }
 }
