@@ -6,9 +6,9 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UpdateTimestamp;
 
-
-import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by sylvester
@@ -29,10 +29,9 @@ public class ProductEntity {
     @OneToOne()
     @JoinColumn(name = "tenure_duration_type_id")
     private TenureDurationTypeEntity tenureDurationTypeEntity;
-    private BigDecimal serviceFee;
-    private BigDecimal dailyFee;
-    private BigDecimal lateFee;
     private int daysAfterDueForFeeApplication;
+    @OneToMany(mappedBy = "productEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProductFeeEntity> productFees = new ArrayList<>();
     private int active=1;
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)

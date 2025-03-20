@@ -2,8 +2,8 @@ package org.skills.loanflow.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.skills.loanflow.dto.products.ProductRequestDTO;
-import org.skills.loanflow.dto.products.ProductResponseDTO;
+import org.skills.loanflow.dto.products.request.FeeRequestDTO;
+import org.skills.loanflow.dto.products.request.ProductRequestDTO;
 import org.skills.loanflow.service.ProductService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,23 +17,36 @@ import org.springframework.web.bind.annotation.*;
  */
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/v1/products")
+@RequestMapping("/v1")
 public class ProductController {
     private final ProductService productService;
 
-    @GetMapping("/duration-types")
+    @GetMapping("/products/duration-types")
     public ResponseEntity<Object> fetchTenureDurationTypes() {
         var tenureDurationTypes = productService.fetchTenureDurationTypes();
         return ResponseEntity.status(HttpStatus.OK).body(tenureDurationTypes);
     }
 
-    @PostMapping
-    public ResponseEntity<ProductResponseDTO> createProduct(@Valid @RequestBody ProductRequestDTO productRequestDTO) {
+    @GetMapping("/products/fee-types")
+    public ResponseEntity<Object> fetchFeeTypes() {
+        var feeTypes = productService.fetchFeeTypes();
+        return ResponseEntity.status(HttpStatus.OK).body(feeTypes);
+    }
+
+    @PostMapping("/products")
+    public ResponseEntity<Object> createProduct(@Valid @RequestBody ProductRequestDTO productRequestDTO) {
         var product = productService.createProduct(productRequestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(product);
     }
-    @GetMapping("/{id}")
-    public ResponseEntity<ProductResponseDTO> getProduct(@PathVariable Long id) {
+
+    @PostMapping("/products/{id}/attach-fee")
+    public ResponseEntity<Object> attachFeeToProduct(@RequestBody FeeRequestDTO request, @PathVariable Long id) {
+        var product = productService.attachFeeToProduct(id, request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(product);
+    }
+
+    @GetMapping("/products/{id}")
+    public ResponseEntity<Object> getProduct(@PathVariable Long id) {
         var product = productService.getProductById(id);
         return ResponseEntity.ok(product);
     }

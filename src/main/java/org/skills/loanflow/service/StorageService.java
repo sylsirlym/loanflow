@@ -1,9 +1,13 @@
 package org.skills.loanflow.service;
 
 import lombok.RequiredArgsConstructor;
+import org.skills.loanflow.entity.FeeTypeEntity;
 import org.skills.loanflow.entity.ProductEntity;
+import org.skills.loanflow.entity.ProductFeeEntity;
 import org.skills.loanflow.entity.TenureDurationTypeEntity;
 import org.skills.loanflow.exception.ResourceNotFoundException;
+import org.skills.loanflow.repository.FeeTypeRepository;
+import org.skills.loanflow.repository.ProductFeeRepository;
 import org.skills.loanflow.repository.ProductRepository;
 import org.skills.loanflow.repository.TenureDurationTypesRepository;
 import org.springframework.stereotype.Service;
@@ -21,6 +25,8 @@ import java.util.List;
 public class StorageService {
     private final ProductRepository productRepository;
     private final TenureDurationTypesRepository tenureDurationTypesRepository;
+    private final FeeTypeRepository feeTypeRepository;
+    private final ProductFeeRepository productFeeRepository;
 
     ProductEntity createProduct(ProductEntity productEntity) {
         return productRepository.save(productEntity);
@@ -38,5 +44,19 @@ public class StorageService {
         return tenureDurationTypesRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Tenure Duration Type with ID "+id+" not found"));
     }
 
+    FeeTypeEntity fetchFeeTypeById(Integer id) {
+        return feeTypeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Fee type not found with ID: " + id));
+    }
 
+    FeeTypeEntity createFeeType(FeeTypeEntity feeTypeEntity) {
+        return feeTypeRepository.save(feeTypeEntity);
+    }
+
+    ProductFeeEntity createProductFee(ProductFeeEntity productFeeEntity) {
+        return productFeeRepository.save(productFeeEntity);
+    }
+    List<FeeTypeEntity> fetchFeeTypes() {
+        return feeTypeRepository.findAll();
+    }
 }

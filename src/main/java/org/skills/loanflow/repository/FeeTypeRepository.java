@@ -1,15 +1,15 @@
 package org.skills.loanflow.repository;
 
-import org.skills.loanflow.entity.TenureDurationTypeEntity;
+import org.skills.loanflow.entity.FeeTypeEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 /**
  * Created by sylvester
  * Email: musyokisyl81@gmail.com
- * Date: 19/03/2025
- * Time: 23:53
+ * Date: 20/03/2025
+ * Time: 10:49
  */
 @Repository
-public interface TenureDurationTypesRepository extends JpaRepository<TenureDurationTypeEntity, Integer> {
+public interface FeeTypeRepository extends JpaRepository<FeeTypeEntity, Integer> {
 }
