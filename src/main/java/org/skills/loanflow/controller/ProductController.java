@@ -1,5 +1,6 @@
 package org.skills.loanflow.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.skills.loanflow.dto.products.ProductRequestDTO;
 import org.skills.loanflow.dto.products.ProductResponseDTO;
@@ -23,13 +24,17 @@ public class ProductController {
     @GetMapping("/duration-types")
     public ResponseEntity<Object> fetchTenureDurationTypes() {
         var tenureDurationTypes = productService.fetchTenureDurationTypes();
-        return ResponseEntity.status(HttpStatus.CREATED).body(tenureDurationTypes);
+        return ResponseEntity.status(HttpStatus.OK).body(tenureDurationTypes);
     }
 
     @PostMapping
-    public ResponseEntity<ProductResponseDTO> createProduct(@RequestBody ProductRequestDTO productRequestDTO) {
+    public ResponseEntity<ProductResponseDTO> createProduct(@Valid @RequestBody ProductRequestDTO productRequestDTO) {
         var product = productService.createProduct(productRequestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(product);
     }
-
+    @GetMapping("/{id}")
+    public ResponseEntity<ProductResponseDTO> getProduct(@PathVariable Long id) {
+        var product = productService.getProductById(id);
+        return ResponseEntity.ok(product);
+    }
 }

@@ -22,6 +22,13 @@ public class ProductService {
     private final StorageService storageService;
     private final ModelMapper modelMapper;
 
+    public List<TenureDurationTypeDTO> fetchTenureDurationTypes() {
+        var tenureTypes = storageService.fetchTenureDurationType();
+        return tenureTypes.stream().map(
+                tenureType -> modelMapper.map(tenureType, TenureDurationTypeDTO.class)
+        ).toList();
+    }
+
     public ProductResponseDTO createProduct(ProductRequestDTO productRequestDTO) {
         var product = modelMapper.map(productRequestDTO, ProductEntity.class);
         product.setTenureDurationTypeEntity(storageService.fetchTenureDurationTypeById(productRequestDTO.getTenureDurationTypeID()));
@@ -29,10 +36,8 @@ public class ProductService {
         return modelMapper.map(savedProduct, ProductResponseDTO.class);
     }
 
-    public List<TenureDurationTypeDTO> fetchTenureDurationTypes() {
-        var tenureTypes = storageService.fetchTenureDurationType();
-        return tenureTypes.stream().map(
-                tenureType -> modelMapper.map(tenureType, TenureDurationTypeDTO.class)
-        ).toList();
+    public ProductResponseDTO getProductById(Long id) {
+        var product = storageService.findProductByID(id);
+        return modelMapper.map(product, ProductResponseDTO.class);
     }
 }

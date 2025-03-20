@@ -33,7 +33,7 @@ public class ProductEntity {
     private BigDecimal dailyFee;
     private BigDecimal lateFee;
     private int daysAfterDueForFeeApplication;
-    private int active;
+    private int active=1;
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateCreated;
