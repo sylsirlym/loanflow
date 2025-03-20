@@ -32,7 +32,7 @@ public class ProductEntity {
     private int daysAfterDueForFeeApplication;
     @OneToMany(mappedBy = "productEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductFeeEntity> productFees = new ArrayList<>();
-    private int active=1;
+    private Integer active=1;
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateCreated;

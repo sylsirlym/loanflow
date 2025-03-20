@@ -1,4 +1,4 @@
-package org.skills.loanflow.dto.products.request;
+package org.skills.loanflow.dto.product.request;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;

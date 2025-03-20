@@ -1,11 +1,15 @@
 package org.skills.loanflow.service;
 
 import lombok.RequiredArgsConstructor;
+import org.skills.loanflow.entity.customer.LoanOfferEntity;
+import org.skills.loanflow.entity.customer.ProfileEntity;
 import org.skills.loanflow.entity.product.FeeTypeEntity;
 import org.skills.loanflow.entity.product.ProductEntity;
 import org.skills.loanflow.entity.product.ProductFeeEntity;
 import org.skills.loanflow.entity.product.TenureDurationTypeEntity;
 import org.skills.loanflow.exception.ResourceNotFoundException;
+import org.skills.loanflow.repository.customer.LoanOfferRepository;
+import org.skills.loanflow.repository.customer.ProfileRepository;
 import org.skills.loanflow.repository.product.FeeTypeRepository;
 import org.skills.loanflow.repository.product.ProductFeeRepository;
 import org.skills.loanflow.repository.product.ProductRepository;
@@ -27,6 +31,9 @@ public class StorageService {
     private final TenureDurationTypesRepository tenureDurationTypesRepository;
     private final FeeTypeRepository feeTypeRepository;
     private final ProductFeeRepository productFeeRepository;
+    private final ProfileRepository profileRepository;
+    private final LoanOfferRepository loanOfferRepository;
+    final
 
     ProductEntity createProduct(ProductEntity productEntity) {
         return productRepository.save(productEntity);
@@ -60,5 +67,17 @@ public class StorageService {
     }
     List<FeeTypeEntity> fetchFeeTypes() {
         return feeTypeRepository.findAll();
+    }
+
+    ProfileEntity saveProfile(ProfileEntity profileEntity) {
+        return profileRepository.save(profileEntity);
+    }
+
+    ProfileEntity findProfileByMsisdn(String msisdn) {
+        return profileRepository.findByMsisdn(msisdn).orElseThrow(() -> new ResourceNotFoundException("Profile with MSISDN "+msisdn+" not found"));
+    }
+
+    LoanOfferEntity saveLoanOffer(LoanOfferEntity loanOfferEntity) {
+        return loanOfferRepository.save(loanOfferEntity);
     }
 }

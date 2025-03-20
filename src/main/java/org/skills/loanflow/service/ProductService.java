@@ -3,10 +3,10 @@ package org.skills.loanflow.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.skills.loanflow.dto.products.request.FeeRequestDTO;
-import org.skills.loanflow.dto.products.request.ProductRequestDTO;
-import org.skills.loanflow.dto.products.response.GenericResponseDTO;
-import org.skills.loanflow.dto.products.response.ProductResponseDTO;
+import org.skills.loanflow.dto.product.request.FeeRequestDTO;
+import org.skills.loanflow.dto.product.request.ProductRequestDTO;
+import org.skills.loanflow.dto.product.response.GenericResponseDTO;
+import org.skills.loanflow.dto.product.response.ProductResponseDTO;
 import org.skills.loanflow.entity.product.FeeTypeEntity;
 import org.skills.loanflow.entity.product.ProductEntity;
 import org.skills.loanflow.entity.product.ProductFeeEntity;
@@ -75,7 +75,7 @@ public class ProductService {
             }
         }
 
-        // Save the product (this will also save the associated fees due to CascadeType.ALL)
+        // Save the product
         var savedProduct = storageService.createProduct(product);
         // Map the saved product to a ProductResponseDTO and return it
         return modelMapper.map(savedProduct, ProductResponseDTO.class);

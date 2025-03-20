@@ -1,4 +1,4 @@
-package org.skills.loanflow.dto.products.request;
+package org.skills.loanflow.dto.product.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

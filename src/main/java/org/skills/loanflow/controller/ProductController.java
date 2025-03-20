@@ -2,8 +2,8 @@ package org.skills.loanflow.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.skills.loanflow.dto.products.request.FeeRequestDTO;
-import org.skills.loanflow.dto.products.request.ProductRequestDTO;
+import org.skills.loanflow.dto.product.request.FeeRequestDTO;
+import org.skills.loanflow.dto.product.request.ProductRequestDTO;
 import org.skills.loanflow.service.ProductService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

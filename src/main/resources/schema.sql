@@ -71,3 +71,38 @@ CREATE TABLE customers (
                            modified_by INT DEFAULT NULL,
                            PRIMARY KEY (customer_id)
 );
+
+DROP TABLE IF EXISTS profiles;
+
+CREATE TABLE profiles (
+                          profile_id BIGINT AUTO_INCREMENT,
+                          customer_id BIGINT NOT NULL,
+                          msisdn VARCHAR(20) NOT NULL,
+                          pin_status INT NOT NULL,
+                          pin_hash VARCHAR(255) NOT NULL,
+                          credit_score DECIMAL(5, 2) NOT NULL,
+                          active INT NOT NULL DEFAULT '1',
+                          date_created TIMESTAMP NOT NULL DEFAULT NOW(),
+                          created_by INT DEFAULT NULL,
+                          date_modified TIMESTAMP DEFAULT NULL,
+                          modified_by INT DEFAULT NULL,
+                          PRIMARY KEY (profile_id),
+                          FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
+);
+
+DROP TABLE IF EXISTS loan_offers;
+
+CREATE TABLE loan_offers (
+                             loan_offer_id BIGINT AUTO_INCREMENT,
+                             profile_id BIGINT NOT NULL,
+                             product_id BIGINT NOT NULL,
+                             loan_limit DECIMAL(19, 2) NOT NULL,
+                             active INT NOT NULL DEFAULT '1',
+                             date_created TIMESTAMP NOT NULL DEFAULT NOW(),
+                             created_by INT DEFAULT NULL,
+                             date_modified TIMESTAMP DEFAULT NULL,
+                             modified_by INT DEFAULT NULL,
+                             PRIMARY KEY (loan_offer_id),
+                             FOREIGN KEY (profile_id) REFERENCES profiles(profile_id),
+                             FOREIGN KEY (product_id) REFERENCES products(product_id)
+);

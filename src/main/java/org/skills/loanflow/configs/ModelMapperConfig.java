@@ -5,8 +5,10 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.config.Configuration;
 import org.modelmapper.convention.MatchingStrategies;
 import org.modelmapper.spi.MappingContext;
-import org.skills.loanflow.dto.products.response.FeeResponseDTO;
-import org.skills.loanflow.dto.products.response.ProductResponseDTO;
+import org.skills.loanflow.dto.product.response.FeeResponseDTO;
+import org.skills.loanflow.dto.product.response.ProductResponseDTO;
+import org.skills.loanflow.dto.profile.response.ProfileResponseDTO;
+import org.skills.loanflow.entity.customer.ProfileEntity;
 import org.skills.loanflow.entity.product.ProductEntity;
 import org.springframework.context.annotation.Bean;
 
@@ -27,6 +29,7 @@ public class ModelMapperConfig {
                 .setFieldAccessLevel(Configuration.AccessLevel.PRIVATE);
 
         modelMapper.addConverter(new ProductEntityToProductDTOConverter());
+        modelMapper.addConverter(new ProfileEntityToProfileResponseDTOConverter());
 
         return modelMapper;
     }
@@ -60,6 +63,25 @@ public class ModelMapperConfig {
                 return String.format("%d %ss", duration,type);
             }
             return String.format("%d %s", duration,type);
+        }
+    }
+
+    private static class ProfileEntityToProfileResponseDTOConverter implements Converter<ProfileEntity, ProfileResponseDTO> {
+        @Override
+        public ProfileResponseDTO convert(MappingContext<ProfileEntity, ProfileResponseDTO> mappingContext) {
+            var profileEntity = mappingContext.getSource();
+            var customer = profileEntity.getCustomer();
+            return ProfileResponseDTO
+                    .builder()
+                    .profileId(profileEntity.getProfileId())
+                    .firstName(customer.getFirstName())
+                    .lastName(customer.getLastName())
+                    .address(customer.getAddress())
+                    .email(customer.getEmail())
+                    .creditScore(profileEntity.getCreditScore())
+                    .pinStatus(profileEntity.getPinStatus())
+                    .msisdn(profileEntity.getMsisdn())
+                    .build();
         }
     }
 
