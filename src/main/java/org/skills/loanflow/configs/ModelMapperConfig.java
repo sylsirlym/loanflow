@@ -7,7 +7,7 @@ import org.modelmapper.convention.MatchingStrategies;
 import org.modelmapper.spi.MappingContext;
 import org.skills.loanflow.dto.products.response.FeeResponseDTO;
 import org.skills.loanflow.dto.products.response.ProductResponseDTO;
-import org.skills.loanflow.entity.ProductEntity;
+import org.skills.loanflow.entity.product.ProductEntity;
 import org.springframework.context.annotation.Bean;
 
 /**

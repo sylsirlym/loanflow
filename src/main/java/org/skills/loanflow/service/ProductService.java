@@ -7,9 +7,9 @@ import org.skills.loanflow.dto.products.request.FeeRequestDTO;
 import org.skills.loanflow.dto.products.request.ProductRequestDTO;
 import org.skills.loanflow.dto.products.response.GenericResponseDTO;
 import org.skills.loanflow.dto.products.response.ProductResponseDTO;
-import org.skills.loanflow.entity.FeeTypeEntity;
-import org.skills.loanflow.entity.ProductEntity;
-import org.skills.loanflow.entity.ProductFeeEntity;
+import org.skills.loanflow.entity.product.FeeTypeEntity;
+import org.skills.loanflow.entity.product.ProductEntity;
+import org.skills.loanflow.entity.product.ProductFeeEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

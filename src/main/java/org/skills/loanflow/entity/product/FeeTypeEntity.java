@@ -1,4 +1,4 @@
-package org.skills.loanflow.entity;
+package org.skills.loanflow.entity.product;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -7,16 +7,16 @@ import org.hibernate.annotations.SQLRestriction;
 /**
  * Created by sylvester
  * Email: musyokisyl81@gmail.com
- * Date: 19/03/2025
- * Time: 23:00
+ * Date: 20/03/2025
+ * Time: 09:42
  */
 @Data
 @Entity
-@Table(name="tenure_duration_types")
+@Table(name = "fee_types")
 @SQLRestriction("active='1'")
-public class TenureDurationTypeEntity {
+public class FeeTypeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int tenureDurationTypeId;
-    private String tenureDurationType;
+    private Integer feeTypeId;
+    private String feeTypeName;
 }

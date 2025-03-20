@@ -1,15 +1,15 @@
 package org.skills.loanflow.service;
 
 import lombok.RequiredArgsConstructor;
-import org.skills.loanflow.entity.FeeTypeEntity;
-import org.skills.loanflow.entity.ProductEntity;
-import org.skills.loanflow.entity.ProductFeeEntity;
-import org.skills.loanflow.entity.TenureDurationTypeEntity;
+import org.skills.loanflow.entity.product.FeeTypeEntity;
+import org.skills.loanflow.entity.product.ProductEntity;
+import org.skills.loanflow.entity.product.ProductFeeEntity;
+import org.skills.loanflow.entity.product.TenureDurationTypeEntity;
 import org.skills.loanflow.exception.ResourceNotFoundException;
-import org.skills.loanflow.repository.FeeTypeRepository;
-import org.skills.loanflow.repository.ProductFeeRepository;
-import org.skills.loanflow.repository.ProductRepository;
-import org.skills.loanflow.repository.TenureDurationTypesRepository;
+import org.skills.loanflow.repository.product.FeeTypeRepository;
+import org.skills.loanflow.repository.product.ProductFeeRepository;
+import org.skills.loanflow.repository.product.ProductRepository;
+import org.skills.loanflow.repository.product.TenureDurationTypesRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

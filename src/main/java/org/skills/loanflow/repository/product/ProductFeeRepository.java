@@ -1,6 +1,6 @@
-package org.skills.loanflow.repository;
+package org.skills.loanflow.repository.product;
 
-import org.skills.loanflow.entity.ProductFeeEntity;
+import org.skills.loanflow.entity.product.ProductFeeEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,4 +1,4 @@
-package org.skills.loanflow.entity;
+package org.skills.loanflow.entity.product;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

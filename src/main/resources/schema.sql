@@ -55,3 +55,19 @@ CREATE TABLE product_fees (
                               FOREIGN KEY (product_id) REFERENCES products(product_id),
                               FOREIGN KEY (fee_type_id) REFERENCES fee_types(fee_type_id)
 );
+
+DROP TABLE IF EXISTS customers;
+
+CREATE TABLE customers (
+                           customer_id BIGINT AUTO_INCREMENT,
+                           first_name VARCHAR(255) NOT NULL,
+                           last_name VARCHAR(255) NOT NULL,
+                           email VARCHAR(255) NOT NULL UNIQUE,
+                           address VARCHAR(500) NOT NULL,
+                           active INT NOT NULL DEFAULT '1',
+                           date_created TIMESTAMP NOT NULL DEFAULT NOW(),
+                           created_by INT DEFAULT NULL,
+                           date_modified TIMESTAMP DEFAULT NULL,
+                           modified_by INT DEFAULT NULL,
+                           PRIMARY KEY (customer_id)
+);
