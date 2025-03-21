@@ -8,8 +8,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.skills.loanflow.configs.LoanFlowConfigs;
 import org.skills.loanflow.dto.product.request.FeeRequestDTO;
 import org.skills.loanflow.dto.product.request.ProductRequestDTO;
+import org.skills.loanflow.dto.product.response.FeeTypeResponseDTO;
 import org.skills.loanflow.dto.product.response.GenericResponseDTO;
 import org.skills.loanflow.dto.product.response.ProductResponseDTO;
 import org.skills.loanflow.entity.product.FeeTypeEntity;
@@ -37,6 +39,8 @@ class ProductServiceTest {
 
     @Mock
     private StorageService storageService;
+    @Mock
+    private LoanFlowConfigs configs;
 
     @Mock
     private ModelMapper modelMapper;
@@ -59,6 +63,7 @@ class ProductServiceTest {
         feeTypeEntity = new FeeTypeEntity();
         feeTypeEntity.setFeeTypeId(1);
         feeTypeEntity.setFeeTypeName("SERVICE_FEE");
+        feeTypeEntity.setFeeType("FIXED_AMOUNT");
 
         productEntity = new ProductEntity();
         productEntity.setProductId(1L);
@@ -97,7 +102,7 @@ class ProductServiceTest {
         when(storageService.fetchFeeTypes()).thenReturn(feeTypes);
 
         // Call the method
-        List<GenericResponseDTO> result = productService.fetchFeeTypes();
+        List<FeeTypeResponseDTO> result = productService.fetchFeeTypes();
 
         // Verify the result
         assertEquals(1, result.size());
@@ -115,7 +120,7 @@ class ProductServiceTest {
         ProductRequestDTO request = new ProductRequestDTO();
         request.setName("Personal Loan");
         request.setTenureDurationTypeID(1);
-        request.setFees(List.of(new FeeRequestDTO(1, 100.0, "USD")));
+        request.setFees(List.of(new FeeRequestDTO(1, 100.0, 7)));
 
         // Mock the first call: map ProductRequestDTO to ProductEntity
         when(modelMapper.map(request, ProductEntity.class)).thenReturn(productEntity);
@@ -127,6 +132,7 @@ class ProductServiceTest {
         when(storageService.fetchTenureDurationTypeById(1)).thenReturn(tenureDurationTypeEntity);
         when(storageService.fetchFeeTypeById(1)).thenReturn(feeTypeEntity);
         when(storageService.createProduct(any(ProductEntity.class))).thenReturn(productEntity);
+        when(configs.getFixedAmountLoanType()).thenReturn("FIXED_AMOUNT");
 
         // Call the method
         ProductResponseDTO result = productService.createProduct(request);
@@ -148,11 +154,12 @@ class ProductServiceTest {
     @DisplayName("Attach Fee to Product - Success")
     void testAttachFeeToProduct() {
         // Mock data
-        FeeRequestDTO request = new FeeRequestDTO(1, 100.0, "USD");
+        FeeRequestDTO request = new FeeRequestDTO(1, 100.0, 5);
 
         when(storageService.findProductByID(1L)).thenReturn(productEntity);
         when(storageService.fetchFeeTypeById(1)).thenReturn(feeTypeEntity);
         when(modelMapper.map(productEntity, ProductResponseDTO.class)).thenReturn(productResponseDTO);
+        when(configs.getFixedAmountLoanType()).thenReturn("FIXED_AMOUNT");
 
         // Call the method
         ProductResponseDTO result = productService.attachFeeToProduct(1L, request);

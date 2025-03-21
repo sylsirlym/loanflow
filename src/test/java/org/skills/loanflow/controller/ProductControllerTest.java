@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.skills.loanflow.dto.product.request.FeeRequestDTO;
 import org.skills.loanflow.dto.product.request.ProductRequestDTO;
+import org.skills.loanflow.dto.product.response.FeeTypeResponseDTO;
 import org.skills.loanflow.dto.product.response.GenericResponseDTO;
 import org.skills.loanflow.dto.product.response.ProductResponseDTO;
 import org.skills.loanflow.service.ProductService;
@@ -79,9 +80,9 @@ class ProductControllerTest {
     @DisplayName("Test Fetch Fee Types")
     void testFetchFeeTypes() throws Exception {
         // Mock data
-        List<GenericResponseDTO> feeTypes = Arrays.asList(
-                new GenericResponseDTO("1", "SERVICE_FEE"),
-                new GenericResponseDTO("2", "DAILY_FEE")
+        List<FeeTypeResponseDTO> feeTypes = Arrays.asList(
+                new FeeTypeResponseDTO("1", "SERVICE_FEE","FIXED_AMOUNT"),
+                new FeeTypeResponseDTO("2", "DAILY_FEE","FIXED_AMOUNT")
         );
 
         // Mock service method

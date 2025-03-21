@@ -1,5 +1,6 @@
 package org.skills.loanflow.dto.product.request;
 
+import jakarta.validation.constraints.Max;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,5 +17,6 @@ import lombok.NoArgsConstructor;
 public class FeeRequestDTO {
     private Integer feeTypeId;
     private Double amount;
-    private String currency;
+    @Max(value = 100, message = "Percentage cannot be greater than 100")
+    private Integer rate;
 }

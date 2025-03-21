@@ -1,6 +1,7 @@
 package org.skills.loanflow.dto.profile.response;
 
 import lombok.Data;
+import org.skills.loanflow.dto.product.response.ProductResponseDTO;
 
 import java.math.BigDecimal;
 
@@ -13,7 +14,6 @@ import java.math.BigDecimal;
 @Data
 public class LoanOfferResponseDTO {
     private Long loanOfferId;
-    private Long profileId;
-    private Long productId;
+    private ProductResponseDTO product;
     private BigDecimal loanLimit;
 }

@@ -43,8 +43,9 @@ public class ModelMapperConfig {
                     .map(productFeeEntity -> FeeResponseDTO
                             .builder()
                             .amount(productFeeEntity.getFeeAmount())
-                            .currency(productFeeEntity.getFeeCurrency())
-                            .feeType(productFeeEntity.getFeeTypeEntity().getFeeTypeName())
+                            .rate(productFeeEntity.getFeeRate())
+                            .feeType(productFeeEntity.getFeeTypeEntity().getFeeType())
+                            .feeTypeName(productFeeEntity.getFeeTypeEntity().getFeeTypeName())
                             .build()
                     ).toList();
 

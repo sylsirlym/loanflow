@@ -19,4 +19,5 @@ public class FeeTypeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer feeTypeId;
     private String feeTypeName;
+    private String feeType;
 }

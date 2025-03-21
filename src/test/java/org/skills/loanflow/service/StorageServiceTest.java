@@ -74,7 +74,7 @@ class StorageServiceTest {
                 .productEntity(productEntity)
                 .feeTypeEntity(feeTypeEntity)
                 .feeAmount(100.0)
-                .feeCurrency("USD")
+                .feeRate(5)
                 .build();
     }
 

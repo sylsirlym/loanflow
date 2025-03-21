@@ -3,8 +3,10 @@ package org.skills.loanflow.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.skills.loanflow.configs.LoanFlowConfigs;
 import org.skills.loanflow.dto.product.request.FeeRequestDTO;
 import org.skills.loanflow.dto.product.request.ProductRequestDTO;
+import org.skills.loanflow.dto.product.response.FeeTypeResponseDTO;
 import org.skills.loanflow.dto.product.response.GenericResponseDTO;
 import org.skills.loanflow.dto.product.response.ProductResponseDTO;
 import org.skills.loanflow.entity.product.FeeTypeEntity;
@@ -25,6 +27,7 @@ import java.util.List;
 public class ProductService {
     private final StorageService storageService;
     private final ModelMapper modelMapper;
+    private final LoanFlowConfigs configs;
 
     public List<GenericResponseDTO> fetchTenureDurationTypes() {
         var tenureTypes = storageService.fetchTenureDurationType();
@@ -36,13 +39,15 @@ public class ProductService {
         ).toList();
     }
 
-    public List<GenericResponseDTO> fetchFeeTypes() {
+    public List<FeeTypeResponseDTO> fetchFeeTypes() {
         var fetchFeeTypes = storageService.fetchFeeTypes();
         return fetchFeeTypes.stream().map(
-                feeType -> GenericResponseDTO
+                feeType -> FeeTypeResponseDTO
                         .builder()
                         .id(String.valueOf(feeType.getFeeTypeId()))
-                        .name(feeType.getFeeTypeName()).build()
+                        .name(feeType.getFeeTypeName())
+                        .type(feeType.getFeeType())
+                        .build()
         ).toList();
     }
 
@@ -63,13 +68,8 @@ public class ProductService {
                 var feeType = storageService.fetchFeeTypeById(feeRequest.getFeeTypeId());
 
                 // Create and associate the ProductFeeEntity
-                var productFee = ProductFeeEntity
-                        .builder()
-                        .productEntity(product)
-                        .feeTypeEntity(feeType)
-                        .feeAmount(feeRequest.getAmount())
-                        .feeCurrency(feeRequest.getCurrency())
-                        .build();
+                var productFee = this.createProductFee(product,feeType,feeRequest);
+
                 // Add the ProductFeeEntity to the ProductEntity's list
                 product.getProductFees().add(productFee);
             }
@@ -96,20 +96,27 @@ public class ProductService {
     @Transactional
     public ProductResponseDTO attachFeeToProduct(Long productID,FeeRequestDTO attachFeeRequestDTO) {
         // Fetch the product and fee type
-        ProductEntity product = storageService.findProductByID(productID);
-        FeeTypeEntity feeType = storageService.fetchFeeTypeById(attachFeeRequestDTO.getFeeTypeId());
+        var product = storageService.findProductByID(productID);
+        var feeType = storageService.fetchFeeTypeById(attachFeeRequestDTO.getFeeTypeId());
 
         // Create the mapping
-        var productFee = ProductFeeEntity
-                .builder()
-                .productEntity(product)
-                .feeTypeEntity(feeType)
-                .feeCurrency(attachFeeRequestDTO.getCurrency())
-                .feeAmount(attachFeeRequestDTO.getAmount())
-                .build();
+        var productFee = this.createProductFee(product,feeType,attachFeeRequestDTO);
 
         // Save the mapping
         storageService.createProductFee(productFee);
         return modelMapper.map(product, ProductResponseDTO.class);
+    }
+
+    private ProductFeeEntity createProductFee(ProductEntity product, FeeTypeEntity feeType, FeeRequestDTO feeRequestDTO) {
+        var productFeeBuilder = ProductFeeEntity
+                .builder()
+                .productEntity(product)
+                .feeTypeEntity(feeType);
+        if (feeType.getFeeType().equalsIgnoreCase(configs.getFixedAmountLoanType())) {
+            productFeeBuilder.feeAmount(feeRequestDTO.getAmount());
+        } else {
+            productFeeBuilder.feeRate(feeRequestDTO.getRate());
+        }
+        return productFeeBuilder.build();
     }
 }

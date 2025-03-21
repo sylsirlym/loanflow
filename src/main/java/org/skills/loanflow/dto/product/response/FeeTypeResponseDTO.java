@@ -1,6 +1,5 @@
 package org.skills.loanflow.dto.product.response;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,13 +12,11 @@ import lombok.NoArgsConstructor;
  * Time: 11:53
  */
 @Builder
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class FeeResponseDTO {
-    private Double amount;
-    private Integer rate;
-    private String feeType;
-    private String feeTypeName;
+@Data
+public class FeeTypeResponseDTO {
+    private String id;
+    private String name;
+    private String type;
 }

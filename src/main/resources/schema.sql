@@ -16,6 +16,7 @@ DROP TABLE IF EXISTS fee_types;
 CREATE TABLE fee_types (
                            fee_type_id INT AUTO_INCREMENT,
                            fee_type_name VARCHAR(50) NOT NULL,
+                           fee_type VARCHAR(50) NOT NULL,
                            active INT NOT NULL DEFAULT '1',
                            date_created TIMESTAMP NOT NULL DEFAULT NOW(),
                            created_by INT DEFAULT NULL,
@@ -48,8 +49,8 @@ CREATE TABLE product_fees (
                               product_fee_id BIGINT AUTO_INCREMENT,
                               product_id BIGINT NOT NULL,
                               fee_type_id INT NOT NULL,
-                              fee_amount DECIMAL(19, 2) NOT NULL,
-                              fee_currency VARCHAR(5) NOT NULL,
+                              fee_amount DECIMAL(19, 2) NULL,
+                              fee_rate INT NULL,
                               active int NOT NULL DEFAULT '1',
                               PRIMARY KEY (product_fee_id),
                               FOREIGN KEY (product_id) REFERENCES products(product_id),
