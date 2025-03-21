@@ -46,6 +46,7 @@ public class ModelMapperConfig {
                             .rate(productFeeEntity.getFeeRate())
                             .feeType(productFeeEntity.getFeeTypeEntity().getFeeType())
                             .feeTypeName(productFeeEntity.getFeeTypeEntity().getFeeTypeName())
+                            .whenToCharge(productFeeEntity.getFeeTypeEntity().getWhenToCharge())
                             .build()
                     ).toList();
 

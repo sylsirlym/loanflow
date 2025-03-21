@@ -30,6 +30,8 @@ public class ProductEntity {
     @JoinColumn(name = "tenure_duration_type_id")
     private TenureDurationTypeEntity tenureDurationTypeEntity;
     private int daysAfterDueForFeeApplication;
+    private String disbursementType;
+    private int disbursementIntervalInDays;
     @OneToMany(mappedBy = "productEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductFeeEntity> productFees = new ArrayList<>();
     private Integer active=1;

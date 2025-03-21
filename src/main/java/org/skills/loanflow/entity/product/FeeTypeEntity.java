@@ -20,4 +20,5 @@ public class FeeTypeEntity {
     private Integer feeTypeId;
     private String feeTypeName;
     private String feeType;
+    private String whenToCharge;
 }

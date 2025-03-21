@@ -3,6 +3,8 @@ package org.skills.loanflow.service;
 import lombok.RequiredArgsConstructor;
 import org.skills.loanflow.entity.customer.LoanOfferEntity;
 import org.skills.loanflow.entity.customer.ProfileEntity;
+import org.skills.loanflow.entity.loan.DisbursementEntity;
+import org.skills.loanflow.entity.loan.LoanEntity;
 import org.skills.loanflow.entity.product.FeeTypeEntity;
 import org.skills.loanflow.entity.product.ProductEntity;
 import org.skills.loanflow.entity.product.ProductFeeEntity;
@@ -10,6 +12,8 @@ import org.skills.loanflow.entity.product.TenureDurationTypeEntity;
 import org.skills.loanflow.exception.ResourceNotFoundException;
 import org.skills.loanflow.repository.customer.LoanOfferRepository;
 import org.skills.loanflow.repository.customer.ProfileRepository;
+import org.skills.loanflow.repository.loan.DisbursementRepository;
+import org.skills.loanflow.repository.loan.LoanRepository;
 import org.skills.loanflow.repository.product.FeeTypeRepository;
 import org.skills.loanflow.repository.product.ProductFeeRepository;
 import org.skills.loanflow.repository.product.ProductRepository;
@@ -33,6 +37,8 @@ public class StorageService {
     private final ProductFeeRepository productFeeRepository;
     private final ProfileRepository profileRepository;
     private final LoanOfferRepository loanOfferRepository;
+    private final LoanRepository loanRepository;
+    private final DisbursementRepository disbursementRepository;
     final
 
     ProductEntity createProduct(ProductEntity productEntity) {
@@ -79,5 +85,15 @@ public class StorageService {
 
     LoanOfferEntity saveLoanOffer(LoanOfferEntity loanOfferEntity) {
         return loanOfferRepository.save(loanOfferEntity);
+    }
+
+    LoanOfferEntity findLoanOfferByID(Long id) {
+        return loanOfferRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Loan offer with ID "+id+" not found"));
+    }
+    LoanEntity createLoan(LoanEntity loanEntity) {
+       return loanRepository.save(loanEntity);
+    }
+    DisbursementEntity saveDisbursement(DisbursementEntity disbursementEntity) {
+        return disbursementRepository.save(disbursementEntity);
     }
 }

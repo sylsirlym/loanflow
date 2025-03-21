@@ -22,4 +22,5 @@ public class FeeResponseDTO {
     private Integer rate;
     private String feeType;
     private String feeTypeName;
+    private String whenToCharge;
 }

@@ -17,4 +17,9 @@ public class LoanFlowConfigs {
     private String fixedAmountLoanType;
     private String percentageOnAmountLoanType;
     private String percentageOnBalanceLoanType;
+    private String lumpSumpDisbursementType;
+    private String trancheBasedDisbursementType;
+    private String chargeBefore;
+    private String chargeDuring;
+    private String chargeAfter;
 }

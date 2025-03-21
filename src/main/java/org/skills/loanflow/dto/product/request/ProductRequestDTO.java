@@ -20,6 +20,8 @@ public class ProductRequestDTO {
     @Min(value = 1, message = "Tenure must be at least 1 day/month")
     private int tenureDuration;
     private int tenureDurationTypeID;
+    private String disbursementTypes;
+    private int disbursementIntervalInDays;
     @Min(value = 0, message = "Days after due for fee application cannot be negative")
     private int daysAfterDueForFeeApplication;
     private List<FeeRequestDTO> fees;
