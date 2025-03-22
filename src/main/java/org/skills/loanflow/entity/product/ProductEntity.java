@@ -6,8 +6,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -36,12 +36,10 @@ public class ProductEntity {
     private List<ProductFeeEntity> productFees = new ArrayList<>();
     private Integer active=1;
     @CreationTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date dateCreated;
+    private LocalDate dateCreated;
     private int createdBy;
     @UpdateTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date dateModified;
+    private LocalDate dateModified;
     private int modifiedBy;
 }
 

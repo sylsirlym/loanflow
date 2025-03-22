@@ -8,7 +8,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.skills.loanflow.entity.customer.LoanOfferEntity;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
+import java.util.List;
 
 /**
  * Created by sylvester
@@ -31,17 +32,17 @@ public class LoanEntity {
     private LoanOfferEntity loanOffer;
     private BigDecimal principal;
     private BigDecimal netDisbursedAmount;
-    private Date disbursementDate;
     private int gracePeriodInDays;
-    private Date dueDate;
+    private LocalDate dueDate;
     private String loanState;
+    @OneToMany(mappedBy = "loanEntity", cascade = CascadeType.ALL)
+    private List<DisbursementEntity> disbursements;
+    private boolean isFullyDisbursed;
     private Integer active = 1;
     @CreationTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date dateCreated;
+    private LocalDate dateCreated;
     private int createdBy;
     @UpdateTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date dateModified;
+    private LocalDate dateModified;
     private int modifiedBy;
 }

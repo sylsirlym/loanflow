@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 
 /**
  * Created by sylvester
@@ -18,8 +18,7 @@ public class LoanResponseDTO {
     private String loanName;
     private BigDecimal principal;
     private BigDecimal principalDisbursed;
-    private Date disbursementDate;
     private int gracePeriodInDays;
-    private Date dueDate;
+    private LocalDate dueDate;
     private String loanState;
 }

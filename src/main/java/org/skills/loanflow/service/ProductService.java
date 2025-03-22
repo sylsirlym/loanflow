@@ -47,6 +47,7 @@ public class ProductService {
                         .id(String.valueOf(feeType.getFeeTypeId()))
                         .name(feeType.getFeeTypeName())
                         .type(feeType.getFeeType())
+                        .whenToCharge(feeType.getWhenToCharge())
                         .build()
         ).toList();
     }
@@ -55,7 +56,9 @@ public class ProductService {
     public ProductResponseDTO createProduct(ProductRequestDTO productRequestDTO) {
         // Map ProductRequestDTO to ProductEntity
         var product = modelMapper.map(productRequestDTO, ProductEntity.class);
-
+        if(product.getDisbursementType().equalsIgnoreCase(configs.getLumpSumpDisbursementType())){
+            product.setDisbursementIntervalInDays(0);
+        }
         // Fetch and set the TenureDurationTypeEntity
         product.setTenureDurationTypeEntity(
                 storageService.fetchTenureDurationTypeById(productRequestDTO.getTenureDurationTypeID())

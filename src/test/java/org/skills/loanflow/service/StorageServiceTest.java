@@ -74,7 +74,7 @@ class StorageServiceTest {
                 .productEntity(productEntity)
                 .feeTypeEntity(feeTypeEntity)
                 .feeAmount(100.0)
-                .feeRate(5)
+                .feeRate(5D)
                 .build();
     }
 

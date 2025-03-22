@@ -25,7 +25,7 @@ public class ProductFeeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer productFeeId;
     private Double feeAmount;
-    private Integer feeRate;
+    private Double feeRate;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private ProductEntity productEntity;

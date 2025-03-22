@@ -11,14 +11,16 @@ import org.skills.loanflow.entity.loan.LoanEntity;
 import org.skills.loanflow.entity.product.FeeTypeEntity;
 import org.skills.loanflow.entity.product.ProductEntity;
 import org.skills.loanflow.entity.product.ProductFeeEntity;
+import org.skills.loanflow.enums.DisbursementStatus;
 import org.skills.loanflow.enums.LoanState;
 import org.skills.loanflow.exception.LoanException;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Calendar;
-import java.util.Date;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by sylvester
@@ -53,33 +55,50 @@ public class LoanService {
         loanEntity.setNetDisbursedAmount(netDisbursedAmount);
         loanEntity.setGracePeriodInDays(gracePeriodInDays);
 
-        loanEntity.setDisbursementDate(new Date());
         loanEntity.setLoanState(LoanState.OPEN.name());
-        if(product.getDisbursementType().equalsIgnoreCase(configs.getLumpSumpDisbursementType())) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.add(Calendar.DAY_OF_MONTH, gracePeriodInDays);
-            loanEntity.setDueDate(calendar.getTime());
-        }
-         var savedLoan =storageService.createLoan(loanEntity);
-        var disbursedAmount = this.getNetDisbursementAmount(product,loanRequestDTO, netDisbursedAmount);
-        var savedDisbursement = this.disburseLoan(savedLoan,disbursedAmount);
+        var disbursements = this.generateLoanDisbursements(product.getDisbursementType(),loanRequestDTO.getDisbursementInstallments(), netDisbursedAmount, loanEntity);
+        loanEntity.setDisbursements(disbursements);
+        var savedLoan = storageService.saveLoan(loanEntity);
 
         var loanResponse = new LoanResponseDTO();
         loanResponse.setLoanName(savedLoan.getLoanOffer().getProduct().getName());
         loanResponse.setPrincipal(savedLoan.getPrincipal());
         loanResponse.setPrincipalDisbursed(netDisbursedAmount);
-        loanResponse.setDisbursementDate(savedDisbursement.getDateCreated());
         loanResponse.setLoanState(loanEntity.getLoanState());
         return loanResponse;
     }
 
-    private BigDecimal getNetDisbursementAmount(ProductEntity productEntity, LoanRequestDTO loanRequestDTO, BigDecimal netDisbursedAmount) {
-        if(productEntity.getDisbursementType().equalsIgnoreCase(configs.getTrancheBasedDisbursementType())){
-            log.info("This is loan will be disbursed in installments");
-            return netDisbursedAmount.divide(BigDecimal.valueOf(loanRequestDTO.getDisbursementInstallments()), 2, RoundingMode.HALF_UP);
+    private List<DisbursementEntity> generateLoanDisbursements(String disbursementType, Integer installments, BigDecimal netDisbursedAmount, LoanEntity loan) {
+        var disbursements = new ArrayList<DisbursementEntity>();
+
+        if (disbursementType.equalsIgnoreCase(configs.getTrancheBasedDisbursementType())) {
+            log.info("This loan will be disbursed in installments");
+            BigDecimal trancheAmount = netDisbursedAmount.divide(BigDecimal.valueOf(installments), 2, RoundingMode.HALF_UP);
+            LocalDate startDate =  LocalDate.now();
+
+            for (int i = 0; i < installments; i++) {
+                var disbursement = new DisbursementEntity();
+                disbursement.setLoanEntity(loan);
+                disbursement.setAmount(trancheAmount);
+                disbursement.setScheduledDate(startDate.plusMonths(i));
+                disbursement.setDisbursed(false);
+                disbursement.setDisbursementStatus(DisbursementStatus.PENDING);
+
+                disbursements.add(disbursement);
+            }
+        } else {
+            log.info("This loan will be disbursed in lump sum");
+            var disbursement = new DisbursementEntity();
+            disbursement.setLoanEntity(loan);
+            disbursement.setAmount(netDisbursedAmount);
+            disbursement.setScheduledDate(LocalDate.now());
+            disbursement.setDisbursed(false);
+            disbursement.setDisbursementStatus(DisbursementStatus.PENDING);
+
+            disbursements.add(disbursement);
         }
-        log.info("This is loan will be disbursed in lump sum");
-        return netDisbursedAmount;
+
+        return disbursements;
     }
 
     /**
@@ -87,28 +106,23 @@ public class LoanService {
      * This gives us the Net Disbursement Amount
      */
     private BigDecimal applyBeforeDisbursementFeesToLoan(BigDecimal requestedAmount, ProductEntity product) {
-        BigDecimal totalFee = BigDecimal.ZERO;
+        var totalFee = BigDecimal.ZERO;
 
         for (ProductFeeEntity productFee : product.getProductFees()) {
             FeeTypeEntity feeTypeEntity = productFee.getFeeTypeEntity();
-
+            var feeType = feeTypeEntity.getFeeType();
+            log.info("Loan fee type is {}", feeType);
             if (configs.getChargeBefore().equals(feeTypeEntity.getWhenToCharge())) {
-                if (configs.getFixedAmountLoanType().equals(feeTypeEntity.getFeeType())) {
+                if (configs.getFixedAmountLoanType().equals(feeType)) {
                     totalFee = totalFee.add(BigDecimal.valueOf(productFee.getFeeAmount()));
-                } else if (configs.getPercentageOnAmountLoanType().equals(feeTypeEntity.getFeeType())) {
+                } else if (configs.getPercentageOnAmountLoanType().equals(feeType)) {
                     BigDecimal percentageFee = requestedAmount.multiply(BigDecimal.valueOf(productFee.getFeeRate() / 100.0));
+                    log.info("Percentage fee is {}", percentageFee);
                     totalFee = totalFee.add(percentageFee);
                 }
             }
+            log.info("Total fee is {}",totalFee);
         }
-        return requestedAmount.min(totalFee);
-    }
-
-    private DisbursementEntity disburseLoan(LoanEntity loanEntity, BigDecimal disbursementAmount) {
-        var disbursementEntity = new DisbursementEntity();
-        disbursementEntity.setLoanEntity(loanEntity);
-        disbursementEntity.setAmount(disbursementAmount);
-        disbursementEntity.setDateCreated(new Date());
-        return storageService.saveDisbursement(disbursementEntity);
+        return requestedAmount.subtract(totalFee);
     }
 }

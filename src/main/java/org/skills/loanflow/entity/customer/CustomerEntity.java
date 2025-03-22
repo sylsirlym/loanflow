@@ -6,7 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 /**
  * Created by sylvester
@@ -30,14 +30,12 @@ public class CustomerEntity {
     private Integer active = 1;
 
     @CreationTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date dateCreated;
+    private LocalDate dateCreated;
 
     private int createdBy;
 
     @UpdateTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date dateModified;
+    private LocalDate dateModified;
 
     private int modifiedBy;
 }

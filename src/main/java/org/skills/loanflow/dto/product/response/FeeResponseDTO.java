@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class FeeResponseDTO {
     private Double amount;
-    private Integer rate;
+    private Double rate;
     private String feeType;
     private String feeTypeName;
     private String whenToCharge;

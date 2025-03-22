@@ -5,9 +5,10 @@ import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.skills.loanflow.enums.DisbursementStatus;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 
 /**
  * Created by sylvester
@@ -27,13 +28,17 @@ public class DisbursementEntity {
     @JoinColumn(name = "loan_id", nullable = false)
     private LoanEntity loanEntity;
     private BigDecimal amount;
+    private LocalDate scheduledDate;
+    private LocalDate actualDisbursementDate;
+    private boolean isDisbursed;
+    @Enumerated(EnumType.STRING)
+    private DisbursementStatus disbursementStatus;
+    private String transactionReference;
     private Integer active=1;
     @CreationTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date dateCreated;
+    private LocalDate dateCreated;
     private int createdBy;
     @UpdateTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date dateModified;
+    private LocalDate dateModified;
     private int modifiedBy;
 }

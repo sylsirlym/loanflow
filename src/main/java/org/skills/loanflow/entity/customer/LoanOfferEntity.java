@@ -8,7 +8,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.skills.loanflow.entity.product.ProductEntity;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 /**
  * Created by sylvester
  * Email: musyokisyl81@gmail.com
@@ -36,14 +36,12 @@ public class LoanOfferEntity {
     private Integer active = 1;
 
     @CreationTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date dateCreated;
+    private LocalDate dateCreated;
 
     private int createdBy;
 
     @UpdateTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date dateModified;
+    private LocalDate dateModified;
 
     private int modifiedBy;
 }

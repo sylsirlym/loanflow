@@ -18,5 +18,5 @@ public class FeeRequestDTO {
     private Integer feeTypeId;
     private Double amount;
     @Max(value = 100, message = "Percentage cannot be greater than 100")
-    private Integer rate;
+    private Double rate;
 }

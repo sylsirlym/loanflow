@@ -81,8 +81,8 @@ class ProductControllerTest {
     void testFetchFeeTypes() throws Exception {
         // Mock data
         List<FeeTypeResponseDTO> feeTypes = Arrays.asList(
-                new FeeTypeResponseDTO("1", "SERVICE_FEE","FIXED_AMOUNT"),
-                new FeeTypeResponseDTO("2", "DAILY_FEE","FIXED_AMOUNT")
+                new FeeTypeResponseDTO("1", "SERVICE_FEE","FIXED_AMOUNT","DURING"),
+                new FeeTypeResponseDTO("2", "DAILY_FEE","FIXED_AMOUNT","DURING")
         );
 
         // Mock service method

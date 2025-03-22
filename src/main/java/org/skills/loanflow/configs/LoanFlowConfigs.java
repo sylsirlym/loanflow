@@ -22,4 +22,7 @@ public class LoanFlowConfigs {
     private String chargeBefore;
     private String chargeDuring;
     private String chargeAfter;
+    private String tenureDurationTypeDay;
+    private String tenureDurationTypeMonth;
+    private String tenureDurationTypeYear;
 }

@@ -120,7 +120,7 @@ class ProductServiceTest {
         ProductRequestDTO request = new ProductRequestDTO();
         request.setName("Personal Loan");
         request.setTenureDurationTypeID(1);
-        request.setFees(List.of(new FeeRequestDTO(1, 100.0, 7)));
+        request.setFees(List.of(new FeeRequestDTO(1, 100.0, 7D)));
 
         // Mock the first call: map ProductRequestDTO to ProductEntity
         when(modelMapper.map(request, ProductEntity.class)).thenReturn(productEntity);
@@ -154,7 +154,7 @@ class ProductServiceTest {
     @DisplayName("Attach Fee to Product - Success")
     void testAttachFeeToProduct() {
         // Mock data
-        FeeRequestDTO request = new FeeRequestDTO(1, 100.0, 5);
+        FeeRequestDTO request = new FeeRequestDTO(1, 100.0, 5D);
 
         when(storageService.findProductByID(1L)).thenReturn(productEntity);
         when(storageService.fetchFeeTypeById(1)).thenReturn(feeTypeEntity);

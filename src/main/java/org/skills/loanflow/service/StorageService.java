@@ -20,6 +20,7 @@ import org.skills.loanflow.repository.product.ProductRepository;
 import org.skills.loanflow.repository.product.TenureDurationTypesRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -90,10 +91,13 @@ public class StorageService {
     LoanOfferEntity findLoanOfferByID(Long id) {
         return loanOfferRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Loan offer with ID "+id+" not found"));
     }
-    LoanEntity createLoan(LoanEntity loanEntity) {
+    LoanEntity saveLoan(LoanEntity loanEntity) {
        return loanRepository.save(loanEntity);
     }
     DisbursementEntity saveDisbursement(DisbursementEntity disbursementEntity) {
         return disbursementRepository.save(disbursementEntity);
+    }
+    List<DisbursementEntity> findUnprocessedDisbursements() {
+        return disbursementRepository.findByScheduledDateAndIsDisbursedFalse(LocalDate.now());
     }
 }
