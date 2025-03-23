@@ -3,6 +3,7 @@ package org.skills.loanflow.dto.product.request;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+import org.skills.loanflow.enums.BillingCycle;
 
 import java.util.List;
 
@@ -24,5 +25,6 @@ public class ProductRequestDTO {
     private int disbursementIntervalInDays;
     @Min(value = 0, message = "Days after due for fee application cannot be negative")
     private int daysAfterDueForFeeApplication;
+    private BillingCycle billingCycle;
     private List<FeeRequestDTO> fees;
 }

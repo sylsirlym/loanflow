@@ -15,10 +15,12 @@ import java.time.LocalDate;
 @Data
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
 public class LoanResponseDTO {
+    private String id;
     private String loanName;
     private BigDecimal principal;
     private BigDecimal principalDisbursed;
     private int gracePeriodInDays;
     private LocalDate dueDate;
     private String loanState;
+    private boolean isFullyDisbursed;
 }

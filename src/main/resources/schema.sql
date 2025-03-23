@@ -36,6 +36,7 @@ CREATE TABLE products (
                          days_after_due_for_fee_application INT NOT NULL,
                          disbursement_type VARCHAR(50) NOT NULL,
                          disbursement_interval_in_days INT NULL,
+                         billing_cycle VARCHAR(50) NOT NULL,
                          active int NOT NULL DEFAULT '1',
                          date_created TIMESTAMP NOT NULL DEFAULT NOW(),
                          created_by INT DEFAULT NULL,

@@ -5,6 +5,7 @@ import org.skills.loanflow.entity.customer.LoanOfferEntity;
 import org.skills.loanflow.entity.customer.ProfileEntity;
 import org.skills.loanflow.entity.loan.DisbursementEntity;
 import org.skills.loanflow.entity.loan.LoanEntity;
+import org.skills.loanflow.entity.loan.RepaymentScheduleEntity;
 import org.skills.loanflow.entity.product.FeeTypeEntity;
 import org.skills.loanflow.entity.product.ProductEntity;
 import org.skills.loanflow.entity.product.ProductFeeEntity;
@@ -99,5 +100,13 @@ public class StorageService {
     }
     List<DisbursementEntity> findUnprocessedDisbursements() {
         return disbursementRepository.findByScheduledDateAndIsDisbursedFalse(LocalDate.now());
+    }
+
+    List<LoanEntity> findAllLoansPerCustomer(String msisdn){
+        return loanRepository.findByLoanOffer_Profile_Msisdn(msisdn);
+    }
+
+    public void saveRepayment(RepaymentScheduleEntity repayment) {
+
     }
 }

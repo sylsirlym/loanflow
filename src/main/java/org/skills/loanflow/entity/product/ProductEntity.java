@@ -5,6 +5,7 @@ import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.skills.loanflow.enums.BillingCycle;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -34,6 +35,8 @@ public class ProductEntity {
     private int disbursementIntervalInDays;
     @OneToMany(mappedBy = "productEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductFeeEntity> productFees = new ArrayList<>();
+    @Enumerated(EnumType.STRING)
+    private BillingCycle billingCycle;
     private Integer active=1;
     @CreationTimestamp
     private LocalDate dateCreated;

@@ -3,6 +3,7 @@ package org.skills.loanflow.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.skills.loanflow.configs.LoanFlowConfigs;
 import org.skills.loanflow.dto.loan.request.LoanRequestDTO;
 import org.skills.loanflow.dto.loan.response.LoanResponseDTO;
@@ -34,6 +35,7 @@ import java.util.List;
 public class LoanService {
     private final StorageService storageService;
     private final LoanFlowConfigs configs;
+    private final ModelMapper modelMapper;
 
     /**
      * Create a new loan.
@@ -59,13 +61,7 @@ public class LoanService {
         var disbursements = this.generateLoanDisbursements(product.getDisbursementType(),loanRequestDTO.getDisbursementInstallments(), netDisbursedAmount, loanEntity);
         loanEntity.setDisbursements(disbursements);
         var savedLoan = storageService.saveLoan(loanEntity);
-
-        var loanResponse = new LoanResponseDTO();
-        loanResponse.setLoanName(savedLoan.getLoanOffer().getProduct().getName());
-        loanResponse.setPrincipal(savedLoan.getPrincipal());
-        loanResponse.setPrincipalDisbursed(netDisbursedAmount);
-        loanResponse.setLoanState(loanEntity.getLoanState());
-        return loanResponse;
+        return modelMapper.map(savedLoan,LoanResponseDTO.class);
     }
 
     private List<DisbursementEntity> generateLoanDisbursements(String disbursementType, Integer installments, BigDecimal netDisbursedAmount, LoanEntity loan) {
@@ -124,5 +120,13 @@ public class LoanService {
             log.info("Total fee is {}",totalFee);
         }
         return requestedAmount.subtract(totalFee);
+    }
+
+    public List<LoanResponseDTO> fetchLoans(String msisdn,String state){
+        var loans = storageService.findAllLoansPerCustomer(msisdn);
+        return loans.stream()
+                .filter(loan -> state == null || state.isBlank() || loan.getLoanState().equalsIgnoreCase(state))
+                .map(loan -> modelMapper.map(loan, LoanResponseDTO.class))
+                .toList();
     }
 }

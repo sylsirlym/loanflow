@@ -5,10 +5,12 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.config.Configuration;
 import org.modelmapper.convention.MatchingStrategies;
 import org.modelmapper.spi.MappingContext;
+import org.skills.loanflow.dto.loan.response.LoanResponseDTO;
 import org.skills.loanflow.dto.product.response.FeeResponseDTO;
 import org.skills.loanflow.dto.product.response.ProductResponseDTO;
 import org.skills.loanflow.dto.profile.response.ProfileResponseDTO;
 import org.skills.loanflow.entity.customer.ProfileEntity;
+import org.skills.loanflow.entity.loan.LoanEntity;
 import org.skills.loanflow.entity.product.ProductEntity;
 import org.springframework.context.annotation.Bean;
 
@@ -30,7 +32,7 @@ public class ModelMapperConfig {
 
         modelMapper.addConverter(new ProductEntityToProductDTOConverter());
         modelMapper.addConverter(new ProfileEntityToProfileResponseDTOConverter());
-
+        modelMapper.addConverter(new LoanEntityToLoanResponseDTOConverter());
         return modelMapper;
     }
 
@@ -56,6 +58,9 @@ public class ModelMapperConfig {
                     .name(productEntity.getName())
                     .tenure(generateTenure(productEntity.getTenureDuration(),productEntity.getTenureDurationTypeEntity().getTenureDurationType()))
                     .daysAfterDueForFeeApplication(productEntity.getDaysAfterDueForFeeApplication())
+                    .disbursementType(productEntity.getDisbursementType())
+                    .disbursementIntervalInDays(productEntity.getDisbursementIntervalInDays())
+                    .billingCycle(productEntity.getBillingCycle())
                     .fees(fees)
                     .build();
         }
@@ -87,5 +92,18 @@ public class ModelMapperConfig {
         }
     }
 
+    private static class LoanEntityToLoanResponseDTOConverter implements Converter<LoanEntity, LoanResponseDTO>{
+        @Override
+        public LoanResponseDTO convert(MappingContext<LoanEntity, LoanResponseDTO> mappingContext) {
+            var loan = mappingContext.getSource();
+            var loanResponse = new LoanResponseDTO();
+            loanResponse.setLoanName(loan.getLoanOffer().getProduct().getName());
+            loanResponse.setPrincipal(loan.getPrincipal());
+            loanResponse.setPrincipalDisbursed(loan.getNetDisbursedAmount());
+            loanResponse.setLoanState(loan.getLoanState());
+            loanResponse.setFullyDisbursed(loan.isFullyDisbursed());
+            return loanResponse;
+        }
+    }
 
 }

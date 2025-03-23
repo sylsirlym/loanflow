@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
 /**
  * Created by sylvester
  * Email: musyokisyl81@gmail.com
@@ -24,5 +25,17 @@ public class LoanController {
         var loan = loanService.requestLoan(offerID, loanRequestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(loan);
     }
+
+    @GetMapping("/{msisdn}")
+    public ResponseEntity<Object> getLoansPerCustomer(@PathVariable("msisdn") String msisdn, @RequestParam("state") String state) {
+        var loan = loanService.fetchLoans(msisdn, state);
+        return ResponseEntity.status(HttpStatus.OK).body(loan);
+    }
+
+//    @GetMapping("/consolidate")
+//    public ResponseEntity<Object> consolidateLoans() {
+//        loanService.consolidate(loans, newDueDate);
+//        return ResponseEntity.status(HttpStatus.OK).body("");
+//    }
 
 }

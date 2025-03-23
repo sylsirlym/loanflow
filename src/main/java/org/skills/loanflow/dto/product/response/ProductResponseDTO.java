@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.skills.loanflow.enums.BillingCycle;
 
 import java.util.List;
 
@@ -26,5 +27,6 @@ public class ProductResponseDTO {
     private int daysAfterDueForFeeApplication;
     private String disbursementType;
     private int disbursementIntervalInDays;
+    private BillingCycle billingCycle;
     private List<FeeResponseDTO> fees;
 }
