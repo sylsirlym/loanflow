@@ -126,6 +126,10 @@ public class StorageService {
         return loanRepository.findByLoanIdIn(loanIds);
     }
 
+    public LoanEntity findLoanById(Long id) {
+        return loanRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Loan  with ID "+id+" not found"));
+    }
+
     public List<RepaymentScheduleEntity> findRepaymentsByLoan(LoanEntity loan) {
         return repaymentScheduleRepository.findAllByLoan(loan);
     }

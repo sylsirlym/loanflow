@@ -245,4 +245,11 @@ public class LoanService {
         }
     }
 
+    public void cancelLoan(Long loanId) {
+        var loan = storageService.findLoanById(loanId);
+        if (!loan.isFullyDisbursed()) {
+            loan.setLoanState(LoanState.CANCELLED);
+            storageService.saveLoan(loan);
+        }
+    }
 }

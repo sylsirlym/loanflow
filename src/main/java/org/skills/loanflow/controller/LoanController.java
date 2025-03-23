@@ -39,4 +39,10 @@ public class LoanController {
         return ResponseEntity.status(HttpStatus.OK).body("Repayments consolidated successfully!");
     }
 
+    @PutMapping("/loans/{loanId}/cancel")
+    public ResponseEntity<String> cancelLoan(@PathVariable Long loanId) {
+        loanService.cancelLoan(loanId);
+        return ResponseEntity.ok("Loan cancelled successfully.");
+    }
+
 }
