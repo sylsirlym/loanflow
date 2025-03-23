@@ -18,18 +18,23 @@ import org.springframework.stereotype.Component;
 public class SchedulerService {
     private final DisbursementService disbursementService;
     private final LoanService loanService;
-    @Scheduled(cron = "0 0 8 * * ?")
-//    @Scheduled(cron = "0 * * * * ?")
+    @Scheduled(cron = "0 0 8 * * ?")//Runs every day at 8 a.m
     public void triggerDisbursementProcessing() {
         log.info("About to trigger disbursement processing");
         disbursementService.processDueDisbursements();
     }
 
-    @Scheduled(cron = "0 0 0 * * ?") // Runs daily at midnight
+    @Scheduled(cron = "0 0 0 * * ?")//Runs at midnight
     @Transactional
     public void checkAndUpdateLoanStates(){
         log.info("About to check and update loan states");
         loanService.checkAndUpdateLoanStates();
     }
 
+    @Scheduled(cron = "0 0 0 * * ?")//Runs at midnight
+    @Transactional
+    public void processOverdueLoans(){
+        log.info("About to process overdue loans");
+        loanService.processOverdueLoans();
+    }
 }

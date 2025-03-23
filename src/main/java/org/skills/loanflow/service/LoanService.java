@@ -39,6 +39,7 @@ public class LoanService {
     private final StorageService storageService;
     private final LoanFlowConfigs configs;
     private final ModelMapper modelMapper;
+    private final NotificationService notificationService;
 
     /**
      * Create a new loan.
@@ -161,7 +162,7 @@ public class LoanService {
 
     @Transactional
     public void checkAndUpdateLoanStates() {
-        List<LoanEntity> activeLoans = storageService.findAllLoansByState(LoanState.OPEN);
+        var activeLoans = storageService.findAllLoansByState(LoanState.OPEN);
 
         for (LoanEntity loan : activeLoans) {
             updateLoanState(loan);
@@ -206,6 +207,42 @@ public class LoanService {
             }
         }
         storageService.saveLoan(loan);
+    }
+
+    public void processOverdueLoans(){
+        log.info("Start overdue loan processing");
+        var overDueLoans = storageService.findAllLoansByState(LoanState.OVERDUE);
+        log.info("Fetched {} overdue loans", overDueLoans.size());
+        for (LoanEntity loan : overDueLoans) {
+            long daysOverdue = ChronoUnit.DAYS.between(loan.getDueDate(), LocalDate.now());
+
+            // Apply late fees
+            this.applyLateFees(loan, daysOverdue);
+            // Send notifications
+            this.sendOverdueNotification(loan);
+        }
+    }
+
+    private void applyLateFees(LoanEntity loan, long daysOverdue) {
+        log.info("Applying late fees on Loan ID {} which {} days overdue", loan.getLoanId(), daysOverdue);
+    }
+
+    private void sendOverdueNotification(LoanEntity loan) {
+        String subject = "Overdue Loan Alert";
+        String message = "Dear Customer,\n\nYour " + loan.getLoanOffer().getProduct().getName() +
+                " loan is overdue. \n\nThank you for banking with us.";
+
+        // Send Email Notification
+        var email = loan.getLoanOffer().getProfile().getCustomer().getEmail();
+        if (email != null) {
+            notificationService.sendEmail(email, subject, message);
+        }
+
+        // Send SMS Notification
+        var msisdn = loan.getLoanOffer().getProfile().getMsisdn();
+        if (msisdn != null) {
+            notificationService.sendSms(msisdn, message);
+        }
     }
 
 }
