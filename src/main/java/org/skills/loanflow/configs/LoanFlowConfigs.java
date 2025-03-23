@@ -26,4 +26,8 @@ public class LoanFlowConfigs {
     private String tenureDurationTypeMonth;
     private String tenureDurationTypeYear;
     private int delinquencyPeriodInMonths;
+    private String createdEventType;
+    private String dueReminderEventType;
+    private String overdueEventType;
+    private int reminderDaysBeforeDue;
 }

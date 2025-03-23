@@ -6,6 +6,7 @@ import org.skills.loanflow.entity.customer.ProfileEntity;
 import org.skills.loanflow.entity.loan.DisbursementEntity;
 import org.skills.loanflow.entity.loan.LoanEntity;
 import org.skills.loanflow.entity.loan.RepaymentScheduleEntity;
+import org.skills.loanflow.entity.notification.NotificationEntity;
 import org.skills.loanflow.entity.product.FeeTypeEntity;
 import org.skills.loanflow.entity.product.ProductEntity;
 import org.skills.loanflow.entity.product.ProductFeeEntity;
@@ -17,6 +18,7 @@ import org.skills.loanflow.repository.customer.ProfileRepository;
 import org.skills.loanflow.repository.loan.DisbursementRepository;
 import org.skills.loanflow.repository.loan.LoanRepository;
 import org.skills.loanflow.repository.loan.RepaymentScheduleRepository;
+import org.skills.loanflow.repository.notification.NotificationRepository;
 import org.skills.loanflow.repository.product.FeeTypeRepository;
 import org.skills.loanflow.repository.product.ProductFeeRepository;
 import org.skills.loanflow.repository.product.ProductRepository;
@@ -44,6 +46,7 @@ public class StorageService {
     private final LoanRepository loanRepository;
     private final DisbursementRepository disbursementRepository;
     private final RepaymentScheduleRepository repaymentScheduleRepository;
+    private final NotificationRepository notificationRepository;
     final
 
     ProductEntity createProduct(ProductEntity productEntity) {
@@ -132,5 +135,17 @@ public class StorageService {
 
     public List<RepaymentScheduleEntity> findRepaymentsByLoan(LoanEntity loan) {
         return repaymentScheduleRepository.findAllByLoan(loan);
+    }
+
+    public void saveNotification(NotificationEntity notificationEntity){
+        notificationRepository.save(notificationEntity);
+    }
+
+    public List<LoanEntity> findLoansDueOn(LocalDate reminderDate) {
+        return loanRepository.findLoansDueOn(reminderDate);
+    }
+
+    public List<NotificationEntity> findNotificationsByMsisdn(String msisdn) {
+        return notificationRepository.findAllByProfile_Msisdn(msisdn);
     }
 }

@@ -24,13 +24,13 @@ public class ProductController {
     @GetMapping("/duration-types")
     public ResponseEntity<Object> fetchTenureDurationTypes() {
         var tenureDurationTypes = productService.fetchTenureDurationTypes();
-        return ResponseEntity.status(HttpStatus.OK).body(tenureDurationTypes);
+        return ResponseEntity.ok(tenureDurationTypes);
     }
 
     @GetMapping("/fee-types")
     public ResponseEntity<Object> fetchFeeTypes() {
         var feeTypes = productService.fetchFeeTypes();
-        return ResponseEntity.status(HttpStatus.OK).body(feeTypes);
+        return ResponseEntity.ok(feeTypes);
     }
 
     @PostMapping

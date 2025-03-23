@@ -4,9 +4,9 @@ CREATE TABLE tenure_duration_types (
                          tenure_duration_type_id INT NOT NULL AUTO_INCREMENT,
                          tenure_duration_type VARCHAR(45) NOT NULL,
                          active INT NOT NULL DEFAULT '1',
-                         date_created TIMESTAMP NOT NULL DEFAULT NOW(),
+                         date_created DATE DEFAULT CURRENT_DATE,
                          created_by INT DEFAULT NULL,
-                         date_modified TIMESTAMP DEFAULT NULL,
+                         date_modified DATE DEFAULT CURRENT_DATE ON UPDATE CURRENT_DATE,
                          modified_by INT DEFAULT NULL,
                          PRIMARY KEY (tenure_duration_type_id)
 );
@@ -19,9 +19,9 @@ CREATE TABLE fee_types (
                            fee_type VARCHAR(50) NOT NULL,
                            when_to_charge VARCHAR(50) NOT NULL,
                            active INT NOT NULL DEFAULT '1',
-                           date_created TIMESTAMP NOT NULL DEFAULT NOW(),
+                           date_created DATE DEFAULT CURRENT_DATE,
                            created_by INT DEFAULT NULL,
-                           date_modified TIMESTAMP DEFAULT NULL,
+                           date_modified DATE DEFAULT CURRENT_DATE ON UPDATE CURRENT_DATE,
                            modified_by INT DEFAULT NULL,
                            PRIMARY KEY (fee_type_id)
 );
@@ -38,9 +38,9 @@ CREATE TABLE products (
                          disbursement_interval_in_days INT NULL,
                          billing_cycle VARCHAR(50) NOT NULL,
                          active int NOT NULL DEFAULT '1',
-                         date_created TIMESTAMP NOT NULL DEFAULT NOW(),
+                         date_created DATE DEFAULT CURRENT_DATE,
                          created_by INT DEFAULT NULL,
-                         date_modified TIMESTAMP DEFAULT NULL,
+                         date_modified DATE DEFAULT CURRENT_DATE ON UPDATE CURRENT_DATE,
                          modified_by INT DEFAULT NULL,
                          PRIMARY KEY (product_id)
 );
@@ -70,9 +70,9 @@ CREATE TABLE customers (
                            email VARCHAR(255) NOT NULL UNIQUE,
                            address VARCHAR(500) NOT NULL,
                            active INT NOT NULL DEFAULT '1',
-                           date_created TIMESTAMP NOT NULL DEFAULT NOW(),
+                           date_created DATE DEFAULT CURRENT_DATE,
                            created_by INT DEFAULT NULL,
-                           date_modified TIMESTAMP DEFAULT NULL,
+                           date_modified DATE DEFAULT CURRENT_DATE ON UPDATE CURRENT_DATE,
                            modified_by INT DEFAULT NULL,
                            PRIMARY KEY (customer_id)
 );
@@ -84,12 +84,14 @@ CREATE TABLE profiles (
                           customer_id BIGINT NOT NULL,
                           msisdn VARCHAR(20) NOT NULL,
                           pin_status INT NOT NULL,
-                          pin_hash VARCHAR(255) NOT NULL,
+                          pin_hash VARCHAR(255),
+                          device_id VARCHAR(500),
+                          preferred_notification_channel VARCHAR(100),
                           credit_score DECIMAL(5, 2) NOT NULL,
                           active INT NOT NULL DEFAULT '1',
-                          date_created TIMESTAMP NOT NULL DEFAULT NOW(),
+                          date_created DATE DEFAULT CURRENT_DATE,
                           created_by INT DEFAULT NULL,
-                          date_modified TIMESTAMP DEFAULT NULL,
+                          date_modified DATE DEFAULT CURRENT_DATE ON UPDATE CURRENT_DATE,
                           modified_by INT DEFAULT NULL,
                           PRIMARY KEY (profile_id),
                           FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
@@ -103,9 +105,9 @@ CREATE TABLE loan_offers (
                              product_id BIGINT NOT NULL,
                              loan_limit DECIMAL(19, 2) NOT NULL,
                              active INT NOT NULL DEFAULT '1',
-                             date_created TIMESTAMP NOT NULL DEFAULT NOW(),
+                             date_created DATE DEFAULT CURRENT_DATE,
                              created_by INT DEFAULT NULL,
-                             date_modified TIMESTAMP DEFAULT NULL,
+                             date_modified DATE DEFAULT CURRENT_DATE ON UPDATE CURRENT_DATE,
                              modified_by INT DEFAULT NULL,
                              PRIMARY KEY (loan_offer_id),
                              FOREIGN KEY (profile_id) REFERENCES profiles(profile_id),
@@ -170,4 +172,23 @@ CREATE TABLE repayment_schedules (
                                      modified_by INT,
                                      PRIMARY KEY (repayment_schedule_id),
                                     FOREIGN KEY (loan_id) REFERENCES loans(loan_id)
+);
+
+DROP TABLE IF EXISTS notifications;
+
+CREATE TABLE notifications (
+                               notification_id BIGINT AUTO_INCREMENT,
+                               profile_id BIGINT NOT NULL,
+                               message VARCHAR(500) NOT NULL,
+                               channel VARCHAR(50) NOT NULL, -- SMS, EMAIL, PUSH
+                               date_sent DATETIME DEFAULT NULL,
+                               delivered BOOLEAN DEFAULT FALSE,
+                               event_type VARCHAR(100) NOT NULL, -- LOAN_CREATED, DUE_REMINDER, etc.
+                               active TINYINT DEFAULT 1,
+                               date_created DATETIME DEFAULT CURRENT_TIMESTAMP,
+                               created_by INT,
+                               date_modified DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                               modified_by INT,
+                               PRIMARY KEY (notification_id),
+                               FOREIGN KEY (profile_id) REFERENCES profiles(profile_id)
 );

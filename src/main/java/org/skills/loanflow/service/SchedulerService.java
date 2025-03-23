@@ -37,4 +37,12 @@ public class SchedulerService {
         log.info("About to process overdue loans");
         loanService.processOverdueLoans();
     }
+
+    @Scheduled(cron = "0 9 * * *") // Run daily at 9 AM
+    @Transactional
+    public void processDueDateReminders() {
+        log.info("About to run due date reminder job...");
+        loanService.sendDueDateReminder();
+    }
+
 }

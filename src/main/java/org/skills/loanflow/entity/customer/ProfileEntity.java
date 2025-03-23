@@ -6,6 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.skills.loanflow.enums.NotificationChannels;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -32,8 +33,11 @@ public class ProfileEntity {
     @JoinColumn(name = "customer_id" ,nullable = false)
     private CustomerEntity customer;
     private String pinHash;
+    private String deviceId;
     private int pinStatus;
     private BigDecimal creditScore;
+    @Enumerated(EnumType.STRING)
+    private NotificationChannels preferredNotificationChannel;
     private Integer active = 1;
 
     @CreationTimestamp

@@ -16,6 +16,7 @@ import org.skills.loanflow.entity.product.ProductFeeEntity;
 import org.skills.loanflow.enums.BillingCycle;
 import org.skills.loanflow.enums.DisbursementStatus;
 import org.skills.loanflow.enums.LoanState;
+import org.skills.loanflow.eventmanagement.LoanEventPublisher;
 import org.skills.loanflow.exception.LoanException;
 import org.springframework.stereotype.Service;
 
@@ -39,7 +40,7 @@ public class LoanService {
     private final StorageService storageService;
     private final LoanFlowConfigs configs;
     private final ModelMapper modelMapper;
-    private final NotificationService notificationService;
+    private final LoanEventPublisher loanEventPublisher;
 
     /**
      * Create a new loan.
@@ -65,6 +66,7 @@ public class LoanService {
         var disbursements = this.generateLoanDisbursements(product.getDisbursementType(),loanRequestDTO.getDisbursementInstallments(), netDisbursedAmount, loanEntity);
         loanEntity.setDisbursements(disbursements);
         var savedLoan = storageService.saveLoan(loanEntity);
+        loanEventPublisher.publishLoanEvent(savedLoan, configs.getCreatedEventType());
         return modelMapper.map(savedLoan,LoanResponseDTO.class);
     }
 
@@ -219,7 +221,7 @@ public class LoanService {
             // Apply late fees
             this.applyLateFees(loan, daysOverdue);
             // Send notifications
-            this.sendOverdueNotification(loan);
+            this.loanEventPublisher.publishLoanEvent(loan,configs.getOverdueEventType());
         }
     }
 
@@ -227,29 +229,21 @@ public class LoanService {
         log.info("Applying late fees on Loan ID {} which {} days overdue", loan.getLoanId(), daysOverdue);
     }
 
-    private void sendOverdueNotification(LoanEntity loan) {
-        String subject = "Overdue Loan Alert";
-        String message = "Dear Customer,\n\nYour " + loan.getLoanOffer().getProduct().getName() +
-                " loan is overdue. \n\nThank you for banking with us.";
-
-        // Send Email Notification
-        var email = loan.getLoanOffer().getProfile().getCustomer().getEmail();
-        if (email != null) {
-            notificationService.sendEmail(email, subject, message);
-        }
-
-        // Send SMS Notification
-        var msisdn = loan.getLoanOffer().getProfile().getMsisdn();
-        if (msisdn != null) {
-            notificationService.sendSms(msisdn, message);
-        }
-    }
-
     public void cancelLoan(Long loanId) {
         var loan = storageService.findLoanById(loanId);
         if (!loan.isFullyDisbursed()) {
             loan.setLoanState(LoanState.CANCELLED);
             storageService.saveLoan(loan);
+        }
+    }
+
+    public void sendDueDateReminder() {
+        log.info("Sending due date reminders");
+        var reminderDate = LocalDate.now().plusDays(configs.getReminderDaysBeforeDue());
+        var loans = storageService.findLoansDueOn(reminderDate);
+
+        for (LoanEntity loan : loans) {
+            loanEventPublisher.publishLoanEvent(loan, configs.getDueReminderEventType());
         }
     }
 }

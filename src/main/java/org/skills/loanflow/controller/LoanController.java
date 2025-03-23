@@ -30,13 +30,13 @@ public class LoanController {
     @GetMapping("/{msisdn}")
     public ResponseEntity<Object> getLoansPerCustomer(@PathVariable("msisdn") String msisdn, @RequestParam("state") String state) {
         var loan = loanService.fetchLoans(msisdn, state);
-        return ResponseEntity.status(HttpStatus.OK).body(loan);
+        return ResponseEntity.ok(loan);
     }
 
     @PostMapping("/consolidate-repayment")
     public ResponseEntity<Object> consolidateRepayments(@RequestBody ConsolidateRepaymentRequestDTO request) {
         loanService.consolidateRepaymentDate(request.getLoanIds(), request.getNewRepaymentDay());
-        return ResponseEntity.status(HttpStatus.OK).body("Repayments consolidated successfully!");
+        return ResponseEntity.ok("Repayments consolidated successfully!");
     }
 
     @PutMapping("/loans/{loanId}/cancel")
