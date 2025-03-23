@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 public class NotificationResponseDTO {
     private String message;
     private String channel;
-    private LocalDateTime dateSend;
+    private LocalDateTime dateSent;
     private boolean delivered;
     private String eventType;
 }
