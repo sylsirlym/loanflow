@@ -36,6 +36,7 @@ public class LoanEntity {
     private int gracePeriodInDays;
     private int coolingOffPeriodInDays;
     private LocalDate dueDate;
+    @Enumerated(EnumType.STRING)
     private LoanState loanState;
     @OneToMany(mappedBy = "loan", cascade = CascadeType.ALL)
     private List<DisbursementEntity> disbursements;

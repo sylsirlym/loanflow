@@ -28,7 +28,7 @@ public class LoanController {
     }
 
     @GetMapping("/{msisdn}")
-    public ResponseEntity<Object> getLoansPerCustomer(@PathVariable("msisdn") String msisdn, @RequestParam("state") String state) {
+    public ResponseEntity<Object> getLoansPerCustomer(@PathVariable("msisdn") String msisdn, @RequestParam(value = "state", required = false) String state) {
         var loan = loanService.fetchLoans(msisdn, state);
         return ResponseEntity.ok(loan);
     }
@@ -39,7 +39,7 @@ public class LoanController {
         return ResponseEntity.ok("Repayments consolidated successfully!");
     }
 
-    @PutMapping("/loans/{loanId}/cancel")
+    @PutMapping("/{loanId}/cancel")
     public ResponseEntity<String> cancelLoan(@PathVariable Long loanId) {
         loanService.cancelLoan(loanId);
         return ResponseEntity.ok("Loan cancelled successfully.");

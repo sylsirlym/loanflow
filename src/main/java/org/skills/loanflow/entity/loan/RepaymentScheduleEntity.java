@@ -5,9 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SQLRestriction;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -38,11 +36,4 @@ public class RepaymentScheduleEntity {
     private LocalDate dueDate;
     private BigDecimal installmentAmount;
     private boolean paid;
-    private Integer active = 1;
-    @CreationTimestamp
-    private LocalDate dateCreated;
-    private int createdBy;
-    @UpdateTimestamp
-    private LocalDate dateModified;
-    private int modifiedBy;
 }
