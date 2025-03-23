@@ -120,8 +120,9 @@ class ProductServiceTest {
         ProductRequestDTO request = new ProductRequestDTO();
         request.setName("Personal Loan");
         request.setTenureDurationTypeID(1);
+        request.setDisbursementType("LUMP_SUM");
         request.setFees(List.of(new FeeRequestDTO(1, 100.0, 7D)));
-
+        productEntity.setDisbursementType("LUMP_SUM");
         // Mock the first call: map ProductRequestDTO to ProductEntity
         when(modelMapper.map(request, ProductEntity.class)).thenReturn(productEntity);
 
