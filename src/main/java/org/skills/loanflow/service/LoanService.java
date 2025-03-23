@@ -9,9 +9,11 @@ import org.skills.loanflow.dto.loan.request.LoanRequestDTO;
 import org.skills.loanflow.dto.loan.response.LoanResponseDTO;
 import org.skills.loanflow.entity.loan.DisbursementEntity;
 import org.skills.loanflow.entity.loan.LoanEntity;
+import org.skills.loanflow.entity.loan.RepaymentScheduleEntity;
 import org.skills.loanflow.entity.product.FeeTypeEntity;
 import org.skills.loanflow.entity.product.ProductEntity;
 import org.skills.loanflow.entity.product.ProductFeeEntity;
+import org.skills.loanflow.enums.BillingCycle;
 import org.skills.loanflow.enums.DisbursementStatus;
 import org.skills.loanflow.enums.LoanState;
 import org.skills.loanflow.exception.LoanException;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,7 +47,6 @@ public class LoanService {
     public LoanResponseDTO requestLoan(Long loanOfferId,LoanRequestDTO loanRequestDTO) {
         var loanOffer = storageService.findLoanOfferByID(loanOfferId);
         var product = loanOffer.getProduct();
-        var gracePeriodInDays = loanRequestDTO.getGracePeriodInDays();
         var loanEntity = new LoanEntity();
         loanEntity.setLoanOffer(loanOffer);
         var requestedAmount = loanRequestDTO.getRequestedAmount();
@@ -55,9 +57,10 @@ public class LoanService {
         loanEntity.setPrincipal(loanRequestDTO.getRequestedAmount());
         var netDisbursedAmount = this.applyBeforeDisbursementFeesToLoan(requestedAmount, loanOffer.getProduct());
         loanEntity.setNetDisbursedAmount(netDisbursedAmount);
-        loanEntity.setGracePeriodInDays(gracePeriodInDays);
+        loanEntity.setGracePeriodInDays(loanRequestDTO.getGracePeriodInDays());
+        loanEntity.setCoolingOffPeriodInDays(loanRequestDTO.getCoolingOffPeriodInDays());
 
-        loanEntity.setLoanState(LoanState.OPEN.name());
+        loanEntity.setLoanState(LoanState.OPEN);
         var disbursements = this.generateLoanDisbursements(product.getDisbursementType(),loanRequestDTO.getDisbursementInstallments(), netDisbursedAmount, loanEntity);
         loanEntity.setDisbursements(disbursements);
         var savedLoan = storageService.saveLoan(loanEntity);
@@ -74,7 +77,7 @@ public class LoanService {
 
             for (int i = 0; i < installments; i++) {
                 var disbursement = new DisbursementEntity();
-                disbursement.setLoanEntity(loan);
+                disbursement.setLoan(loan);
                 disbursement.setAmount(trancheAmount);
                 disbursement.setScheduledDate(startDate.plusMonths(i));
                 disbursement.setDisbursed(false);
@@ -85,7 +88,7 @@ public class LoanService {
         } else {
             log.info("This loan will be disbursed in lump sum");
             var disbursement = new DisbursementEntity();
-            disbursement.setLoanEntity(loan);
+            disbursement.setLoan(loan);
             disbursement.setAmount(netDisbursedAmount);
             disbursement.setScheduledDate(LocalDate.now());
             disbursement.setDisbursed(false);
@@ -125,8 +128,84 @@ public class LoanService {
     public List<LoanResponseDTO> fetchLoans(String msisdn,String state){
         var loans = storageService.findAllLoansPerCustomer(msisdn);
         return loans.stream()
-                .filter(loan -> state == null || state.isBlank() || loan.getLoanState().equalsIgnoreCase(state))
+                .filter(loan -> state == null || state.isBlank() || loan.getLoanState().equals(LoanState.valueOf(state)))
                 .map(loan -> modelMapper.map(loan, LoanResponseDTO.class))
                 .toList();
     }
+
+    @Transactional
+    public void consolidateRepaymentDate(List<Long> loanIds, int newRepaymentDay) {
+        List<LoanEntity> loans = storageService.findLoansByIds(loanIds);
+
+        for (LoanEntity loan : loans) {
+            if (!loan.getLoanOffer().getProduct().getBillingCycle().equals(BillingCycle.MONTHLY)) {
+                throw new IllegalArgumentException("Only monthly repayment loans can be consolidated.");
+            }
+
+            loan.setDueDate(this.adjustDueDate(loan.getDueDate(),newRepaymentDay));
+            storageService.saveLoan(loan);
+
+            // Update existing repayment schedules
+            var schedules = storageService.findRepaymentsByLoan(loan);
+            schedules.forEach(schedule -> schedule.setDueDate(this.adjustDueDate(schedule.getDueDate(),newRepaymentDay)));
+            storageService.saveRepayments(schedules);
+        }
+    }
+
+    private LocalDate adjustDueDate(LocalDate currentDueDate, int newRepaymentDay) {
+        // Ensure valid day range (1-28 to avoid February issues)
+        int safeRepaymentDay = Math.min(newRepaymentDay, 28);
+
+        return currentDueDate.withDayOfMonth(safeRepaymentDay);
+    }
+
+    @Transactional
+    public void checkAndUpdateLoanStates() {
+        List<LoanEntity> activeLoans = storageService.findAllLoansByState(LoanState.OPEN);
+
+        for (LoanEntity loan : activeLoans) {
+            updateLoanState(loan);
+
+            // Check if loan should be written off
+            if (loan.getLoanState() == LoanState.OVERDUE) {
+                long monthsOverdue = ChronoUnit.MONTHS.between(loan.getDueDate(), LocalDate.now());
+                if (monthsOverdue >= configs.getDelinquencyPeriodInMonths()) {
+                    loan.setLoanState(LoanState.WRITTEN_OFF);
+                    storageService.saveLoan(loan);
+                }
+            }
+        }
+    }
+
+    @Transactional
+    public void updateLoanState(LoanEntity loan) {
+        if (loan.getLoanState() == LoanState.CANCELLED || loan.getLoanState() == LoanState.CLOSED) {
+            return; // No updates needed for already cancelled/closed loans
+        }
+
+        if (!loan.isFullyDisbursed()) {
+            boolean hasDisbursements = loan.getDisbursements().stream().anyMatch(DisbursementEntity::isDisbursed);
+            LocalDate disbursementDeadline = loan.getDateCreated().plusDays(loan.getCoolingOffPeriodInDays());
+
+            if (!hasDisbursements && LocalDate.now().isAfter(disbursementDeadline)) {
+                // No disbursements and disbursement period expired → Cancel the loan
+                loan.setLoanState(LoanState.CANCELLED);
+            }
+        } else {
+            // Check repayments
+            var repayments = loan.getRepaymentSchedules();
+
+            boolean allPaid = repayments.stream().allMatch(RepaymentScheduleEntity::isPaid);
+            boolean hasOverdue = repayments.stream()
+                    .anyMatch(r -> !r.isPaid() && r.getDueDate().isBefore(LocalDate.now()));
+
+            if (allPaid) {
+                loan.setLoanState(LoanState.CLOSED);
+            } else if (hasOverdue) {
+                loan.setLoanState(LoanState.OVERDUE);
+            }
+        }
+        storageService.saveLoan(loan);
+    }
+
 }

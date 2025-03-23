@@ -1,6 +1,7 @@
 package org.skills.loanflow.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.skills.loanflow.dto.loan.request.ConsolidateRepaymentRequestDTO;
 import org.skills.loanflow.dto.loan.request.LoanRequestDTO;
 import org.skills.loanflow.service.LoanService;
 import org.springframework.http.HttpStatus;
@@ -32,10 +33,10 @@ public class LoanController {
         return ResponseEntity.status(HttpStatus.OK).body(loan);
     }
 
-//    @GetMapping("/consolidate")
-//    public ResponseEntity<Object> consolidateLoans() {
-//        loanService.consolidate(loans, newDueDate);
-//        return ResponseEntity.status(HttpStatus.OK).body("");
-//    }
+    @PostMapping("/consolidate-repayment")
+    public ResponseEntity<Object> consolidateRepayments(@RequestBody ConsolidateRepaymentRequestDTO request) {
+        loanService.consolidateRepaymentDate(request.getLoanIds(), request.getNewRepaymentDay());
+        return ResponseEntity.status(HttpStatus.OK).body("Repayments consolidated successfully!");
+    }
 
 }

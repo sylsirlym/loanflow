@@ -121,6 +121,7 @@ CREATE TABLE loans (
                        net_disbursed_amount DECIMAL(19, 4),
                        disbursement_date DATETIME,
                        grace_period_in_days INT,
+                       cooling_off_period_in_days INT,
                        due_date DATETIME,
                        loan_state VARCHAR(50),
                        is_fully_disbursed BOOLEAN DEFAULT FALSE,
@@ -152,4 +153,21 @@ CREATE TABLE disbursements (
                        modified_by INT,
                        PRIMARY KEY (disbursement_id),
                        FOREIGN KEY (loan_id) REFERENCES loans(loan_id)
+);
+
+DROP TABLE IF EXISTS repayment_schedules;
+
+CREATE TABLE repayment_schedules (
+                                     repayment_schedule_id BIGINT AUTO_INCREMENT,
+                                     loan_id BIGINT NOT NULL,
+                                     due_date DATE NOT NULL,
+                                     installment_amount DECIMAL(19, 4) NOT NULL,
+                                     paid BOOLEAN NOT NULL DEFAULT FALSE,
+                                     active INT NOT NULL DEFAULT 1,
+                                     date_created DATE DEFAULT CURRENT_DATE,
+                                     created_by INT,
+                                     date_modified DATE DEFAULT CURRENT_DATE ON UPDATE CURRENT_DATE,
+                                     modified_by INT,
+                                     PRIMARY KEY (repayment_schedule_id),
+                                    FOREIGN KEY (loan_id) REFERENCES loans(loan_id)
 );

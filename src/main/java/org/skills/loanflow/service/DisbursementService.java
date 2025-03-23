@@ -36,7 +36,7 @@ public class DisbursementService {
         var dueDisbursements = storageService.findUnprocessedDisbursements();
 
         for (DisbursementEntity disbursement : dueDisbursements) {
-            var loan = disbursement.getLoanEntity();
+            var loan = disbursement.getLoan();
 
             // Process disbursement
             disbursement.setDisbursed(true);

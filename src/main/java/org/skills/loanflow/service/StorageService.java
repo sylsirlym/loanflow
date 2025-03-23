@@ -10,11 +10,13 @@ import org.skills.loanflow.entity.product.FeeTypeEntity;
 import org.skills.loanflow.entity.product.ProductEntity;
 import org.skills.loanflow.entity.product.ProductFeeEntity;
 import org.skills.loanflow.entity.product.TenureDurationTypeEntity;
+import org.skills.loanflow.enums.LoanState;
 import org.skills.loanflow.exception.ResourceNotFoundException;
 import org.skills.loanflow.repository.customer.LoanOfferRepository;
 import org.skills.loanflow.repository.customer.ProfileRepository;
 import org.skills.loanflow.repository.loan.DisbursementRepository;
 import org.skills.loanflow.repository.loan.LoanRepository;
+import org.skills.loanflow.repository.loan.RepaymentScheduleRepository;
 import org.skills.loanflow.repository.product.FeeTypeRepository;
 import org.skills.loanflow.repository.product.ProductFeeRepository;
 import org.skills.loanflow.repository.product.ProductRepository;
@@ -41,6 +43,7 @@ public class StorageService {
     private final LoanOfferRepository loanOfferRepository;
     private final LoanRepository loanRepository;
     private final DisbursementRepository disbursementRepository;
+    private final RepaymentScheduleRepository repaymentScheduleRepository;
     final
 
     ProductEntity createProduct(ProductEntity productEntity) {
@@ -95,8 +98,9 @@ public class StorageService {
     LoanEntity saveLoan(LoanEntity loanEntity) {
        return loanRepository.save(loanEntity);
     }
-    DisbursementEntity saveDisbursement(DisbursementEntity disbursementEntity) {
-        return disbursementRepository.save(disbursementEntity);
+
+    void saveDisbursement(DisbursementEntity disbursementEntity) {
+        disbursementRepository.save(disbursementEntity);
     }
     List<DisbursementEntity> findUnprocessedDisbursements() {
         return disbursementRepository.findByScheduledDateAndIsDisbursedFalse(LocalDate.now());
@@ -106,7 +110,23 @@ public class StorageService {
         return loanRepository.findByLoanOffer_Profile_Msisdn(msisdn);
     }
 
-    public void saveRepayment(RepaymentScheduleEntity repayment) {
+    List<LoanEntity> findAllLoansByState(LoanState state){
+        return loanRepository.findByLoanState(state);
+    }
 
+    public void saveRepayment(RepaymentScheduleEntity repayment) {
+        repaymentScheduleRepository.save(repayment);
+    }
+
+    public void saveRepayments(List<RepaymentScheduleEntity> repayment) {
+        repaymentScheduleRepository.saveAll(repayment);
+    }
+
+    public List<LoanEntity> findLoansByIds(List<Long> loanIds) {
+        return loanRepository.findByLoanIdIn(loanIds);
+    }
+
+    public List<RepaymentScheduleEntity> findRepaymentsByLoan(LoanEntity loan) {
+        return repaymentScheduleRepository.findAllByLoan(loan);
     }
 }

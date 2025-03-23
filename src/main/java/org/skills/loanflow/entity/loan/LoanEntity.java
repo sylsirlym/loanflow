@@ -6,6 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.skills.loanflow.entity.customer.LoanOfferEntity;
+import org.skills.loanflow.enums.LoanState;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -33,10 +34,13 @@ public class LoanEntity {
     private BigDecimal principal;
     private BigDecimal netDisbursedAmount;
     private int gracePeriodInDays;
+    private int coolingOffPeriodInDays;
     private LocalDate dueDate;
-    private String loanState;
-    @OneToMany(mappedBy = "loanEntity", cascade = CascadeType.ALL)
+    private LoanState loanState;
+    @OneToMany(mappedBy = "loan", cascade = CascadeType.ALL)
     private List<DisbursementEntity> disbursements;
+    @OneToMany(mappedBy = "loan", cascade = CascadeType.ALL)
+    private List<RepaymentScheduleEntity> repaymentSchedules;
     private boolean isFullyDisbursed;
     private Integer active = 1;
     @CreationTimestamp

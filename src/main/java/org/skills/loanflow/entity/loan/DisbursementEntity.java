@@ -26,7 +26,7 @@ public class DisbursementEntity {
     private Long disbursementId;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "loan_id", nullable = false)
-    private LoanEntity loanEntity;
+    private LoanEntity loan;
     private BigDecimal amount;
     private LocalDate scheduledDate;
     private LocalDate actualDisbursementDate;

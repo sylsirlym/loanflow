@@ -25,4 +25,5 @@ public class LoanFlowConfigs {
     private String tenureDurationTypeDay;
     private String tenureDurationTypeMonth;
     private String tenureDurationTypeYear;
+    private int delinquencyPeriodInMonths;
 }

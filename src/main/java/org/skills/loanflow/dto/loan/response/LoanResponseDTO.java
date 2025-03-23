@@ -2,6 +2,7 @@ package org.skills.loanflow.dto.loan.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
+import org.skills.loanflow.enums.LoanState;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -21,6 +22,6 @@ public class LoanResponseDTO {
     private BigDecimal principalDisbursed;
     private int gracePeriodInDays;
     private LocalDate dueDate;
-    private String loanState;
+    private LoanState loanState;
     private boolean isFullyDisbursed;
 }

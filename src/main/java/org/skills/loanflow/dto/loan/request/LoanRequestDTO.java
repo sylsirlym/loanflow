@@ -15,4 +15,5 @@ public class LoanRequestDTO {
     private BigDecimal requestedAmount;//Requested Amount
     private Integer disbursementInstallments; //No of disbursements. Divide principal with this no
     private int gracePeriodInDays;
+    private int coolingOffPeriodInDays;
 }

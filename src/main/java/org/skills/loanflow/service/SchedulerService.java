@@ -1,5 +1,6 @@
 package org.skills.loanflow.service;
 
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -16,10 +17,19 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class SchedulerService {
     private final DisbursementService disbursementService;
-//    @Scheduled(cron = "0 0 8 * * ?")
-    @Scheduled(cron = "0 * * * * ?")
+    private final LoanService loanService;
+    @Scheduled(cron = "0 0 8 * * ?")
+//    @Scheduled(cron = "0 * * * * ?")
     public void triggerDisbursementProcessing() {
         log.info("About to trigger disbursement processing");
         disbursementService.processDueDisbursements();
     }
+
+    @Scheduled(cron = "0 0 0 * * ?") // Runs daily at midnight
+    @Transactional
+    public void checkAndUpdateLoanStates(){
+        log.info("About to check and update loan states");
+        loanService.checkAndUpdateLoanStates();
+    }
+
 }
