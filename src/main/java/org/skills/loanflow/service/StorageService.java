@@ -7,6 +7,7 @@ import org.skills.loanflow.entity.loan.DisbursementEntity;
 import org.skills.loanflow.entity.loan.LoanEntity;
 import org.skills.loanflow.entity.loan.RepaymentScheduleEntity;
 import org.skills.loanflow.entity.notification.NotificationEntity;
+import org.skills.loanflow.entity.notification.NotificationTemplateEntity;
 import org.skills.loanflow.entity.product.FeeTypeEntity;
 import org.skills.loanflow.entity.product.ProductEntity;
 import org.skills.loanflow.entity.product.ProductFeeEntity;
@@ -19,6 +20,7 @@ import org.skills.loanflow.repository.loan.DisbursementRepository;
 import org.skills.loanflow.repository.loan.LoanRepository;
 import org.skills.loanflow.repository.loan.RepaymentScheduleRepository;
 import org.skills.loanflow.repository.notification.NotificationRepository;
+import org.skills.loanflow.repository.notification.NotificationTemplateRepository;
 import org.skills.loanflow.repository.product.FeeTypeRepository;
 import org.skills.loanflow.repository.product.ProductFeeRepository;
 import org.skills.loanflow.repository.product.ProductRepository;
@@ -47,6 +49,7 @@ public class StorageService {
     private final DisbursementRepository disbursementRepository;
     private final RepaymentScheduleRepository repaymentScheduleRepository;
     private final NotificationRepository notificationRepository;
+    private final NotificationTemplateRepository notificationTemplateRepository;
     final
 
     ProductEntity createProduct(ProductEntity productEntity) {
@@ -142,10 +145,14 @@ public class StorageService {
     }
 
     public List<LoanEntity> findLoansDueOn(LocalDate reminderDate) {
-        return loanRepository.findLoansDueOn(reminderDate);
+        return loanRepository.findByDueDate(reminderDate);
     }
 
     public List<NotificationEntity> findNotificationsByMsisdn(String msisdn) {
         return notificationRepository.findAllByProfile_Msisdn(msisdn);
+    }
+
+    public NotificationTemplateEntity findByEventTypeAndChannel(String eventType, String channel) {
+        return notificationTemplateRepository.findByEventTypeAndChannel(eventType, channel).orElseThrow(() -> new ResourceNotFoundException("Response template not found for "+eventType+" on "+channel));
     }
 }

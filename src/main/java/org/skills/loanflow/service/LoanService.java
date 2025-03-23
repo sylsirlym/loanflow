@@ -47,6 +47,7 @@ public class LoanService {
      */
     @Transactional
     public LoanResponseDTO requestLoan(Long loanOfferId,LoanRequestDTO loanRequestDTO) {
+        log.info("Requesting a loan");
         var loanOffer = storageService.findLoanOfferByID(loanOfferId);
         var product = loanOffer.getProduct();
         var loanEntity = new LoanEntity();

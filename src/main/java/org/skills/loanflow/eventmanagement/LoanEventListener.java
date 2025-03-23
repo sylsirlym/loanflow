@@ -1,5 +1,6 @@
 package org.skills.loanflow.eventmanagement;
 
+import lombok.extern.slf4j.Slf4j;
 import org.skills.loanflow.entity.loan.LoanEntity;
 import org.skills.loanflow.entity.loan.RepaymentScheduleEntity;
 import org.skills.loanflow.service.NotificationService;
@@ -7,9 +8,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Created by sylvester
@@ -17,6 +16,7 @@ import java.util.Optional;
  * Date: 23/03/2025
  * Time: 19:45
  */
+@Slf4j
 @Component
 public class LoanEventListener {
 
@@ -29,23 +29,30 @@ public class LoanEventListener {
     @EventListener
     public void handleLoanEvent(LoanEvent event) {
         LoanEntity loan = event.getLoan();
-        String message = this.generateMessage(event.getEventType(), loan);
-        notificationService.sendNotification(loan.getLoanOffer().getProfile(), message, event.getEventType());
+        var variables = this.generateNotificationMap(event.getEventType(), loan);
+        notificationService.sendNotification(loan.getLoanOffer().getProfile(), variables, event.getEventType());
     }
 
-    private String generateMessage(String eventType, LoanEntity loan) {
-        return switch (eventType) {
-            case "LOAN_CREATED" -> "Your loan of " + loan.getPrincipal() + " has been received.";
+    private Map<String, String> generateNotificationMap(String eventType, LoanEntity loan) {
+        Map<String, String> variables = new HashMap<>();
+
+        switch (eventType) {
+            case "LOAN_CREATED" -> variables.put("amount", loan.getPrincipal().toString());
             case "DUE_REMINDER" -> {
                 var nextSchedule = getNextRepaymentSchedule(loan.getRepaymentSchedules());
-                yield nextSchedule.map(schedule ->
-                                "Reminder: Your loan payment of " + schedule.getInstallmentAmount() + " is due on " + schedule.getDueDate() + ".")
-                        .orElse("Reminder: You have no upcoming due payments.");
+                nextSchedule.ifPresent(schedule -> {
+                    variables.put("amount", schedule.getInstallmentAmount().toString());
+                    variables.put("due_date", schedule.getDueDate().toString());
+                });
             }
-            case "OVERDUE" -> "Alert: Your loan is overdue. Please make payment immediately.";
-            default -> "Notification regarding your loan.";
-        };
+            case "OVERDUE" -> variables.put("product_name", loan.getLoanOffer().getProduct().getName());
+            default -> log.info("Event type:{} not known", eventType);
+        }
+
+        return variables;
     }
+
+
 
 
     public Optional<RepaymentScheduleEntity> getNextRepaymentSchedule(List<RepaymentScheduleEntity> repaymentSchedules) {

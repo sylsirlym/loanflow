@@ -19,5 +19,5 @@ public interface LoanRepository extends JpaRepository<LoanEntity, Long>{
     List<LoanEntity> findByLoanOffer_Profile_Msisdn(String msisdn);
     List<LoanEntity> findByLoanIdIn(List<Long> loanIds);
     List<LoanEntity> findByLoanState(LoanState state);
-    List<LoanEntity> findLoansDueOn(LocalDate reminderDate);
+    List<LoanEntity> findByDueDate(LocalDate reminderDate);
 }

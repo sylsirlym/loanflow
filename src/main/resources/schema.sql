@@ -192,3 +192,19 @@ CREATE TABLE notifications (
                                PRIMARY KEY (notification_id),
                                FOREIGN KEY (profile_id) REFERENCES profiles(profile_id)
 );
+
+DROP TABLE IF EXISTS notification_templates;
+
+CREATE TABLE notification_templates (
+                                        notification_template_id BIGINT AUTO_INCREMENT,
+                                        event_type VARCHAR(255) NOT NULL,
+                                        channel VARCHAR(50) NOT NULL,
+                                        template_text VARCHAR(1000) NOT NULL,
+                                        active TINYINT(1) DEFAULT 1,
+                                        date_created DATETIME DEFAULT CURRENT_TIMESTAMP,
+                                        created_by INT,
+                                        date_modified DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                                        modified_by INT,
+                                        PRIMARY KEY (notification_template_id)
+);
+

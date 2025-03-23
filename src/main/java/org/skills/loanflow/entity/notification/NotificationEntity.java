@@ -8,7 +8,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.skills.loanflow.entity.customer.ProfileEntity;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 /**
  * Created by sylvester
@@ -31,12 +30,12 @@ public class NotificationEntity {
 
     private String message;
     private String channel; // SMS, EMAIL, PUSH
-    private LocalDateTime dateSend;
+    private LocalDate dateSent;
     private boolean delivered;
     private String eventType; // LOAN_CREATED, DUE_REMINDER, etc.
     private Integer active=1;
     @CreationTimestamp
-    private LocalDateTime dateCreated;
+    private LocalDate dateCreated;
     private int createdBy;
     @UpdateTimestamp
     private LocalDate dateModified;

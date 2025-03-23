@@ -6,9 +6,12 @@ import org.modelmapper.ModelMapper;
 import org.skills.loanflow.dto.notification.NotificationResponseDTO;
 import org.skills.loanflow.entity.customer.ProfileEntity;
 import org.skills.loanflow.entity.notification.NotificationEntity;
+import org.skills.loanflow.entity.notification.NotificationTemplateEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by sylvester
@@ -23,15 +26,17 @@ public class NotificationService {
     private final StorageService storageService;
     private final ModelMapper modelMapper;
 
-    public void sendNotification(ProfileEntity profile, String message, String eventType) {
+    public void sendNotification(ProfileEntity profile, Map<String,String> variables, String eventType) {
         String preferredChannel = profile.getPreferredNotificationChannel().name();
         log.info("Sending {} notification to {}", eventType, profile.getMsisdn());
-
+        var message = this.generateMessage(eventType, preferredChannel, variables);
+        log.info("Generated message: {}", message);
         NotificationEntity notification = new NotificationEntity();
         notification.setProfile(profile);
         notification.setMessage(message);
         notification.setChannel(preferredChannel);
         notification.setEventType(eventType);
+        notification.setDateSent(LocalDate.now());
 
         storageService.saveNotification(notification);
 
@@ -65,5 +70,16 @@ public class NotificationService {
         return notifications.stream()
                 .map(notification-> modelMapper.map(notification, NotificationResponseDTO.class))
                 .toList();
+    }
+
+    public String generateMessage(String eventType, String channel, Map<String, String> variables) {
+        NotificationTemplateEntity template = storageService.findByEventTypeAndChannel(eventType, channel);
+
+        String message = template.getTemplateText();
+        for (Map.Entry<String, String> entry : variables.entrySet()) {
+            message = message.replace("{" + entry.getKey() + "}", entry.getValue());
+        }
+
+        return message;
     }
 }

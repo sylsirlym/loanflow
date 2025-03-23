@@ -77,7 +77,6 @@ public class ProductService {
                 product.getProductFees().add(productFee);
             }
         }
-
         // Save the product
         var savedProduct = storageService.createProduct(product);
         // Map the saved product to a ProductResponseDTO and return it
