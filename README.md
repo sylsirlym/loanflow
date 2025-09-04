@@ -1,6 +1,6 @@
-# LendFlow - Java Lending Application
+# Loan Flow - Java Lending Application
 
-LendFlow is a loan management system designed to handle various loan operations, including product management, fee configurations, loan lifecycle tracking, and notifications.
+Loan Flow is a loan management system designed to handle various loan operations, including product management, fee configurations, loan lifecycle tracking, and notifications.
 
 ## Project Details
 

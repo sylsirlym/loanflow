@@ -50,7 +50,7 @@ public class StorageService {
     private final RepaymentScheduleRepository repaymentScheduleRepository;
     private final NotificationRepository notificationRepository;
     private final NotificationTemplateRepository notificationTemplateRepository;
-    final
+
 
     ProductEntity createProduct(ProductEntity productEntity) {
         return productRepository.save(productEntity);
@@ -73,10 +73,6 @@ public class StorageService {
     FeeTypeEntity fetchFeeTypeById(Integer id) {
         return feeTypeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Fee type not found with ID: " + id));
-    }
-
-    FeeTypeEntity createFeeType(FeeTypeEntity feeTypeEntity) {
-        return feeTypeRepository.save(feeTypeEntity);
     }
 
     void createProductFee(ProductFeeEntity productFeeEntity) {
